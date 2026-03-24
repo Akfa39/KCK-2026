@@ -1,32 +1,80 @@
+import sys
 import cv2
 import mediapipe as mp
+import statistics as s
+
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
-cap = cv2.VideoCapture("filmy/T - Trim.mp4")
-pose = mp_pose.Pose()
-_ , frame = cap.read()
-results = pose.process(frame)
-landmarks = results.pose_landmarks.landmark
-
-ramie_lewe = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER]
-ramie_prawe = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-nadgarstek_lewy = landmarks[mp_pose.PoseLandmark.LEFT_WRIST]
-nadgarstek_prawy = landmarks[mp_pose.PoseLandmark.RIGHT_WRIST]
 
 TOLERANCE = 0.1
 
-if abs(ramie_lewe.y - nadgarstek_lewy.y) < TOLERANCE and abs(ramie_prawe.y - nadgarstek_prawy.y) < TOLERANCE:
-    print("T POSE")
+def recognize_letter(landmarks):
+    left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER]
+    right_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER]
 
-nos = landmarks[mp_pose.PoseLandmark.NOSE]
+    left_wrist = landmarks[mp_pose.PoseLandmark.LEFT_WRIST]
+    right_wrist = landmarks[mp_pose.PoseLandmark.RIGHT_WRIST]
 
-if abs(nadgarstek_lewy.y - nadgarstek_prawy.y) < TOLERANCE and nadgarstek_prawy.y + TOLERANCE > nos.y:
-    print("Y POSE")
+    nose = landmarks[mp_pose.PoseLandmark.NOSE]
 
-biodro_lewe = landmarks[mp_pose.PoseLandmark.LEFT_HIP]
-biodro_prawe = landmarks[mp_pose.PoseLandmark.RIGHT_HIP]
+    left_hip = landmarks[mp_pose.PoseLandmark.LEFT_HIP]
+    right_hip = landmarks[mp_pose.PoseLandmark.RIGHT_HIP]
 
-if abs(nadgarstek_lewy.y - nadgarstek_prawy.y) < TOLERANCE and nadgarstek_prawy.y + TOLERANCE > biodro_prawe.y:
-    print("I POSE")
+    if abs(left_shoulder.y - left_wrist.y) < TOLERANCE and abs(right_shoulder.y - right_wrist.y) < TOLERANCE:
+        return "T"
 
+    elif abs(left_wrist.y - right_wrist.y) < TOLERANCE and s.mean([left_wrist.y, right_wrist.y])  < nose.y:
+        return "Y"
 
+    elif abs(left_wrist.y - right_wrist.y) < TOLERANCE and s.mean([left_wrist.y, right_wrist.y]) + TOLERANCE > s.mean([left_hip.y, right_hip.y]):
+        return "I"
+
+    # TODO: L letter
+
+    return "Nie rozpoznano"
+
+def main():
+    video_source = 0
+    if len(sys.argv) > 1:
+        video_source = sys.argv[1]
+
+    cap = cv2.VideoCapture(video_source)
+
+    with mp_pose.Pose() as pose:
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            # frame = cv2.flip(frame, 1)
+
+            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            image.flags.writeable = False
+
+            results = pose.process(image)
+
+            image.flags.writeable = True
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+            if results.pose_landmarks:
+                mp_drawing.draw_landmarks(
+                    image,
+                    results.pose_landmarks,
+                    mp_pose.POSE_CONNECTIONS
+                )
+
+                letter = recognize_letter(results.pose_landmarks.landmark)
+
+                cv2.putText(image, f'Litera: {letter}', (50, 50),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1, cv2.FILLED)
+
+            cv2.imshow('Human alphabet', image)
+
+            if cv2.waitKey(10) & 0xFF in [ord('q'), ord('Q')]:
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()
