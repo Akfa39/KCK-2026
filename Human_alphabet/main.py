@@ -29,7 +29,8 @@ def recognize_letter(landmarks):
     elif abs(left_wrist.y - right_wrist.y) < TOLERANCE and s.mean([left_wrist.y, right_wrist.y]) + TOLERANCE > s.mean([left_hip.y, right_hip.y]):
         return "I"
 
-    # TODO: L letter
+    elif abs(right_wrist.x - right_shoulder.x) < TOLERANCE and abs(left_wrist.y - left_shoulder.y) < TOLERANCE and right_wrist.y < right_shoulder.y:
+        return "L"
 
     return "Nie rozpoznano"
 
