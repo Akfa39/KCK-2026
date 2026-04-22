@@ -1,0 +1,81 @@
+//Konta użytkowników aplikacji
+Table TBL_Users {
+  id integer [primary key, increment, not null]
+  user varchar [not null, unique]
+}
+
+//Ustawienia i dane użytkownika
+Table TBL_User_Settings {
+  user_id integer [primary key]
+  language varchar [not null, default: 'pl']
+  unit_system varchar [not null, default: 'metric', note: 'metric | imperial']
+  weight_kg real
+  height_cm real
+  birth_date date
+  gender varchar [note: 'M | F']
+}
+
+//Katalog ćwiczeń
+Table TBL_Exercises {
+  id integer [primary key, increment, not null]
+  user_id integer
+  name varchar [not null]
+  description text
+  muscle_group varchar
+  equipment varchar
+  difficulty varchar [note: 'easy | medium | hard']
+  image blob
+  video blob
+}
+
+//Zapisane plany treningowe
+Table TBL_Training_Plans {
+  id integer [primary key, increment, not null]
+  user_id integer [not null]
+  name varchar [not null]
+}
+
+//Plan trenigowy
+Table TBL_Training_Plan_Exercises {
+  id integer [primary key, increment]
+  plan_id integer [not null]
+  exercise_id integer [not null]
+  order_index integer [not null]
+  sets integer [not null, default: 1]
+  target_reps integer
+  target_duration_seconds integer
+}
+
+//Historia treningów
+Table TBL_Workouts {
+  id integer [primary key, increment]
+  user_id integer [not null]
+  plan_id integer
+  started_at time [not null]
+  ended_at time
+  calories_burned integer
+  notes text
+  status varchar [not null, default: 'completed', note: 'in_progress | completed | aborted']
+}
+
+//Szczegóły wykonanych ćwiczeń
+Table TBL_Workout_Exercises {
+  id integer [primary key, increment]
+  workout_id integer [not null]
+  exercise_id integer [not null]
+  set_number integer [not null, default: 1]
+  reps_completed integer
+  duration_seconds integer
+}
+
+Ref: TBL_User_Settings.user_id - TBL_Users.id
+Ref: TBL_Exercises.user_id > TBL_Users.id [delete: set null]
+Ref: TBL_Training_Plans.user_id > TBL_Users.id
+Ref: TBL_Training_Plan_Exercises.plan_id > TBL_Training_Plans.id
+Ref: TBL_Training_Plan_Exercises.exercise_id > TBL_Exercises.id
+Ref: TBL_Workouts.user_id > TBL_Users.id
+Ref: TBL_Workouts.plan_id > TBL_Training_Plans.id
+Ref: TBL_Workout_Exercises.workout_id > TBL_Workouts.id
+Ref: TBL_Workout_Exercises.exercise_id > TBL_Exercises.id
+
+Ref: "TBL_Workout_Exercises"."id" < "TBL_Workout_Exercises"."exercise_id"
