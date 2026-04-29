@@ -1,3 +1,5 @@
 vosk
 pyaudio
 pygame
+opencv-python
+mediapipe==0.10.14
