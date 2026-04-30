@@ -4,6 +4,7 @@ import cv2
 from audio.speech_recognizer import SpeechRecognizer
 from audio.player import AudioPlayer
 from cv.pose_detector import PoseDetector
+from ui.app import run as run_ui
 
 MODEL_PATH = "assets/vosk-model-small-pl-0.22"
 AUDIO_FILE = "assets/test.mp3"
@@ -24,6 +25,9 @@ def _vision_loop(detector: PoseDetector, frames: dict):
             frames[detector.camera_index] = frame
 
 if __name__ == "__main__":
+    #Test działania UI - odkomentować
+    #run_ui()
+
     player = AudioPlayer()
     player.play(AUDIO_FILE)
 
@@ -48,3 +52,4 @@ if __name__ == "__main__":
     finally:
         cv2.destroyAllWindows()
         player.close()
+
