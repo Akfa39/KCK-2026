@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+from typing import Callable, Optional
 import flet as ft
 
 # Colors
@@ -16,6 +18,14 @@ NAV_ITEMS = [
     ("Kalendarz", "📅"),
     ("Ustawienia", "⚙️"),
 ]
+
+
+@dataclass
+class AppActions:
+    on_home: Optional[Callable] = None
+    on_trainings: Optional[Callable] = None
+    on_calendar: Optional[Callable] = None
+    on_settings: Optional[Callable] = None
 
 
 # Placeholder
@@ -68,7 +78,7 @@ PAGES = [page_home, page_trainings, page_calendar, page_settings]
 
 # Main
 
-def main(page: ft.Page):
+def main(page: ft.Page, actions: AppActions):
     page.title = "Trening App"
     page.bgcolor = C_BG
     page.padding = 0
@@ -77,6 +87,13 @@ def main(page: ft.Page):
     page.window_resizable = False
 
     active_index = 0
+
+    _nav_actions = [
+        actions.on_home,
+        actions.on_trainings,
+        actions.on_calendar,
+        actions.on_settings,
+    ]
 
     content_area = ft.Container(expand=True, bgcolor=C_BG)
 
@@ -129,6 +146,10 @@ def main(page: ft.Page):
         nonlocal active_index
         active_index = index
 
+        action = _nav_actions[index]
+        if action:
+            action()
+
         content_area.content = PAGES[index]()
 
         rebuild_nav()
@@ -146,5 +167,7 @@ def main(page: ft.Page):
     switch_tab(0)
 
 
-def run():
-    ft.run(main)
+def run(actions: Optional[AppActions] = None):
+    if actions is None:
+        actions = AppActions()
+    ft.run(lambda page: main(page, actions))
