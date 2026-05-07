@@ -5,9 +5,11 @@ from audio.speech_recognizer import SpeechRecognizer
 from audio.player import AudioPlayer
 from cv.pose_detector import PoseDetector
 from ui.app import run as run_ui, AppActions
+from database.connector import DatabaseConnector
 
 MODEL_PATH = "assets/vosk-model-small-pl-0.22"
 AUDIO_FILE = "assets/test.mp3"
+
 
 CAMERA_INDICES = [0, 1]
 
@@ -74,6 +76,7 @@ def start_pose_detection():
 if __name__ == "__main__":
     player = AudioPlayer()
     player.play(AUDIO_FILE)
+    database = DatabaseConnector("app.db")
 
     recognizer = SpeechRecognizer(MODEL_PATH)
     threading.Thread(target=_speech_loop, args=(recognizer,), daemon=True).start()
@@ -81,3 +84,4 @@ if __name__ == "__main__":
     run_ui(AppActions(on_settings=start_pose_detection))
 
     player.close()
+    database.close()
