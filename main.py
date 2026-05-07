@@ -7,7 +7,8 @@ from cv.pose_detector import PoseDetector
 from ui.app import run as run_ui, AppActions
 
 MODEL_PATH = "assets/vosk-model-small-pl-0.22"
-AUDIO_FILE = "assets/test.mp3"
+MUSIC_FILE = "assets/music.mp3"
+DIALOGUE_FILE = "assets/oh_no.mp3"
 
 CAMERA_INDICES = [0, 1]
 
@@ -72,12 +73,14 @@ def start_pose_detection():
 
 
 if __name__ == "__main__":
-    player = AudioPlayer()
-    player.play(AUDIO_FILE)
+    background = AudioPlayer(0)
+    background.play(MUSIC_FILE)
+
+    dialogues = AudioPlayer(1)
+    dialogues.play(DIALOGUE_FILE)
 
     recognizer = SpeechRecognizer(MODEL_PATH)
     threading.Thread(target=_speech_loop, args=(recognizer,), daemon=True).start()
 
     run_ui(AppActions(on_settings=start_pose_detection))
 
-    player.close()
