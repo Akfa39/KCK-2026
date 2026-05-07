@@ -5,10 +5,12 @@ from audio.speech_recognizer import SpeechRecognizer
 from audio.player import AudioPlayer
 from cv.pose_detector import PoseDetector
 from ui.app import run as run_ui, AppActions
+from database.connector import DatabaseConnector
 
 MODEL_PATH = "assets/vosk-model-small-pl-0.22"
 MUSIC_FILE = "assets/music.mp3"
 DIALOGUE_FILE = "assets/oh_no.mp3"
+
 
 CAMERA_INDICES = [0, 1]
 
@@ -73,6 +75,8 @@ def start_pose_detection():
 
 
 if __name__ == "__main__":
+    database = DatabaseConnector("app.db")
+  
     background = AudioPlayer(0)
     background.play(MUSIC_FILE)
 
@@ -84,3 +88,5 @@ if __name__ == "__main__":
 
     run_ui(AppActions(on_settings=start_pose_detection))
 
+    database.close()
+    
