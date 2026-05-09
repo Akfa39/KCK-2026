@@ -86,7 +86,11 @@ if __name__ == "__main__":
     recognizer = SpeechRecognizer(MODEL_PATH)
     threading.Thread(target=_speech_loop, args=(recognizer,), daemon=True).start()
 
-    run_ui(AppActions(on_settings=start_pose_detection))
+    run_ui(AppActions(
+        on_settings=start_pose_detection,
+        music_player=background,
+        dialogues_player=dialogues,
+    ))
 
     database.close()
     

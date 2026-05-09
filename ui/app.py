@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Callable, Optional
+from dataclasses import dataclass, field
+from typing import Callable, Optional, Any
 import flet as ft
 
 # Colors
@@ -26,6 +26,8 @@ class AppActions:
     on_trainings: Optional[Callable] = None
     on_calendar: Optional[Callable] = None
     on_settings: Optional[Callable] = None
+    music_player: Optional[Any] = None
+    dialogues_player: Optional[Any] = None
 
 
 # Placeholder
@@ -69,11 +71,129 @@ def page_calendar():
     return make_placeholder("📅", "Kalendarz", "Tu znajdzie się kalendarz aktywności")
 
 
-def page_settings():
-    return make_placeholder("⚙️", "Ustawienia", "Tu znajdą się opcje konfiguracji aplikacji")
+def _make_volume_row(
+        label: str,
+        emoji: str,
+        player: Optional[Any],
+        vol_state: list,
+) -> ft.Container:
+    initial_value = vol_state[0]
+
+    value_label = ft.Text(
+        f"{int(initial_value)}%",
+        color=C_ACCENT,
+        size=14,
+        weight=ft.FontWeight.W_600,
+        width=44,
+        text_align=ft.TextAlign.RIGHT,
+    )
+
+    def on_change(e: ft.ControlEvent):
+        raw = float(e.data)
+        vol_state[0] = raw
+        # print(f"[Slider] on_change → raw={raw}, player={player}") - CheckVolumeChange
+        if player:
+            player.set_volume(raw / 100)
+        value_label.value = f"{int(raw)}%"
+        value_label.update()
+
+    slider = ft.Slider(
+        value=initial_value,
+        min=0,
+        max=100,
+        divisions=100,
+        expand=True,
+        active_color=C_ACCENT,
+        inactive_color=C_BORDER,
+        thumb_color=C_ACCENT,
+        on_change=on_change,
+    )
+
+    header = ft.Row(
+        controls=[
+            ft.Text(emoji, size=18),
+            ft.Text(
+                label,
+                color=C_TEXT,
+                size=15,
+                weight=ft.FontWeight.W_500,
+                expand=True,
+            ),
+            value_label,
+        ],
+        spacing=10,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+    )
+
+    slider_row = ft.Row(
+        controls=[slider],
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+    )
+
+    card_content = ft.Column(
+        controls=[header, slider_row],
+        spacing=6,
+    )
+
+    return ft.Container(
+        content=card_content,
+        bgcolor=C_CARD,
+        border_radius=14,
+        padding=ft.padding.symmetric(horizontal=24, vertical=18),
+        border=ft.border.all(1, C_BORDER),
+    )
 
 
-PAGES = [page_home, page_trainings, page_calendar, page_settings]
+def _page_settings(
+        music_player: Optional[Any],
+        music_vol: list,
+        dialogues_player: Optional[Any],
+        dialogues_vol: list,
+):
+    title = ft.Text(
+        "Ustawienia",
+        color=C_TEXT,
+        size=26,
+        weight=ft.FontWeight.W_700,
+    )
+
+    subtitle = ft.Text(
+        "Dostosuj dźwięk aplikacji",
+        color=C_MUTED,
+        size=14,
+    )
+
+    section_label = ft.Text(
+        "🔊  Głośność",
+        color=C_MUTED,
+        size=12,
+        weight=ft.FontWeight.W_600,
+    )
+
+    music_row = _make_volume_row("Muzyka", "🎵", music_player, music_vol)
+    dialogues_row = _make_volume_row("Dialogi", "🗣️", dialogues_player, dialogues_vol)
+
+    content = ft.Column(
+        controls=[
+            title,
+            subtitle,
+            ft.Container(height=24),
+            section_label,
+            ft.Container(height=8),
+            music_row,
+            ft.Container(height=12),
+            dialogues_row,
+        ],
+        spacing=0,
+        scroll=ft.ScrollMode.AUTO,
+    )
+
+    return ft.Container(
+        content=content,
+        expand=True,
+        padding=ft.padding.symmetric(horizontal=48, vertical=40),
+        alignment=ft.Alignment(-1, -1),
+    )
 
 
 # Main
@@ -88,11 +208,28 @@ def main(page: ft.Page, actions: AppActions):
 
     active_index = 0
 
+    music_vol: list = [
+        round(actions.music_player.get_volume() * 100) if actions.music_player else 50
+    ]
+    dialogues_vol: list = [
+        round(actions.dialogues_player.get_volume() * 100) if actions.dialogues_player else 50
+    ]
+
     _nav_actions = [
         actions.on_home,
         actions.on_trainings,
         actions.on_calendar,
         actions.on_settings,
+    ]
+
+    pages = [
+        page_home,
+        page_trainings,
+        page_calendar,
+        lambda: _page_settings(
+            actions.music_player, music_vol,
+            actions.dialogues_player, dialogues_vol,
+        ),
     ]
 
     content_area = ft.Container(expand=True, bgcolor=C_BG)
@@ -150,7 +287,7 @@ def main(page: ft.Page, actions: AppActions):
         if action:
             action()
 
-        content_area.content = PAGES[index]()
+        content_area.content = pages[index]()
 
         rebuild_nav()
 

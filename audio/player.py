@@ -23,6 +23,7 @@ class AudioPlayer:
 
     def set_volume(self, volume: float):
         volume = max(0.0, min(1.0, volume))
+        #print(f"[AudioPlayer] set_volume → channel={self.channel}, vol={volume}") - CheckVolumeChange
         self.channel.set_volume(volume)
 
     def get_volume(self) -> float:
