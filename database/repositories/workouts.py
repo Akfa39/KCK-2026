@@ -44,6 +44,16 @@ class WorkoutRepository(BaseRepository):
         ).fetchall()
         return [self._row_to_dict(r) for r in rows]
 
+    def get_calendar(self, user_id: int) -> list[dict]:
+        rows = self._execute(
+            """SELECT id, started_at, ended_at
+               FROM TBL_Workouts
+               WHERE user_id = ?
+               ORDER BY started_at DESC""",
+            (user_id,)
+        ).fetchall()
+        return [self._row_to_dict(r) for r in rows]
+
     def get_by_id(self, workout_id: int) -> dict | None:
         row = self._execute(
             "SELECT * FROM TBL_Workouts WHERE id = ?", (workout_id,)
