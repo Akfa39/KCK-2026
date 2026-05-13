@@ -1,26 +1,30 @@
 import pygame
 
 class AudioPlayer:
-    def __init__(self):
-        pygame.mixer.init()
+    _init = False
 
-    def play(self, file_path: str, wait: bool = False):
-        pygame.mixer.music.load(file_path)
-        pygame.mixer.music.play()
+    def __init__(self, channel_id: int):
+        if not AudioPlayer._init:
+            pygame.init()
+            pygame.mixer.init()
+            _init = True
 
-        if wait:
-            self.wait_until_done()
+        self.channel = pygame.mixer.Channel(channel_id)
 
-    def wait_until_done(self):
-        clock = pygame.time.Clock()
-        while pygame.mixer.music.get_busy():
-            clock.tick(10)
+    def play(self, file_path: str):
+        sound = pygame.mixer.Sound(file_path)
+        self.channel.play(sound)
 
     def stop(self):
-        pygame.mixer.music.stop()
+        self.channel.stop()
 
     def is_playing(self) -> bool:
-        return pygame.mixer.music.get_busy()
+        return self.channel.get_busy()
 
-    def close(self):
-        pygame.mixer.quit()
+    def set_volume(self, volume: float):
+        volume = max(0.0, min(1.0, volume))
+        #print(f"[AudioPlayer] set_volume → channel={self.channel}, vol={volume}") - CheckVolumeChange
+        self.channel.set_volume(volume)
+
+    def get_volume(self) -> float:
+        return self.channel.get_volume()
