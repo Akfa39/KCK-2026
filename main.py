@@ -12,6 +12,7 @@ MUSIC_FILE = "assets/music.mp3"
 DIALOGUE_FILE = "assets/oh_no.mp3"
 
 
+
 CAMERA_INDICES = [0, 1]
 
 _pose_running = False
@@ -76,7 +77,7 @@ def start_pose_detection():
 
 if __name__ == "__main__":
     database = DatabaseConnector("app.db")
-  
+
     background = AudioPlayer(0)
     background.play(MUSIC_FILE)
 
@@ -93,4 +94,3 @@ if __name__ == "__main__":
     ))
 
     database.close()
-    
