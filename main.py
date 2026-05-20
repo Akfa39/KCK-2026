@@ -14,7 +14,6 @@ MUSIC_FILE = "assets/music.mp3"
 DIALOGUE_FILE = "assets/oh_no.mp3"
 
 
-
 CAMERA_INDICES = [0, 1]
 
 _pose_running = False

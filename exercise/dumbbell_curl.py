@@ -63,15 +63,15 @@ class DumbbellCurl(Exercise):
 
         lm_front = frame.front.landmark
         shoulder_f = lm_front[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-        elbow_f    = lm_front[mp_pose.PoseLandmark.RIGHT_ELBOW]
-        wrist_f    = lm_front[mp_pose.PoseLandmark.RIGHT_WRIST]
+        elbow_f = lm_front[mp_pose.PoseLandmark.RIGHT_ELBOW]
+        wrist_f = lm_front[mp_pose.PoseLandmark.RIGHT_WRIST]
         angle = _angle(shoulder_f, elbow_f, wrist_f)
 
         if frame.side is not None:
-            lm_side   = frame.side.landmark
+            lm_side = frame.side.landmark
             shoulder_s = lm_side[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-            elbow_s    = lm_side[mp_pose.PoseLandmark.RIGHT_ELBOW]
-            hip_s      = lm_side[mp_pose.PoseLandmark.RIGHT_HIP]
+            elbow_s = lm_side[mp_pose.PoseLandmark.RIGHT_ELBOW]
+            hip_s = lm_side[mp_pose.PoseLandmark.RIGHT_HIP]
 
             if self.state == CurlState.DOWN and angle >= self.ANGLE_DOWN:
                 self._torso_x_baseline = shoulder_s.x - hip_s.x
