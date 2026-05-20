@@ -24,10 +24,10 @@ class PoseDetector:
 
     def read(self):
         if not self._cap or not self._cap.isOpened():
-            return None
+            return None, None
         ret, frame = self._cap.read()
         if not ret:
-            return None
+            return None, None
 
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
@@ -38,4 +38,4 @@ class PoseDetector:
         if results.pose_landmarks:
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
-        return image
+        return image, results.pose_landmarks
