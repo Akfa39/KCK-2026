@@ -4,6 +4,8 @@ import cv2
 from audio.speech_recognizer import SpeechRecognizer
 from audio.player import AudioPlayer
 from cv.pose_detector import PoseDetector
+from exercise.dumbbell_curl import DumbbellCurl
+from exercise.excerise import PoseFrame
 from ui.app import run as run_ui, AppActions
 from database.connector import DatabaseConnector
 
@@ -26,12 +28,13 @@ def _speech_loop(recognizer: SpeechRecognizer):
             print(f"Rozpoznano: {text}")
 
 
-def _vision_loop(detector: PoseDetector, frames: dict, stop_event: threading.Event):
+def _vision_loop(detector: PoseDetector, frames: dict, landmarks: dict, stop_event: threading.Event):
     detector.start()
     while not stop_event.is_set():
-        frame = detector.read()
+        frame, lm = detector.read()
         if frame is not None:
             frames[detector.camera_index] = frame
+            landmarks[detector.camera_index] = lm
     detector.stop()
 
 
@@ -39,18 +42,40 @@ def _pose_session():
     global _pose_running
 
     frames: dict = {}
+    landmarks: dict = {}
     stop_event = threading.Event()
+
+    exercise = DumbbellCurl()
 
     detectors = [PoseDetector(i) for i in CAMERA_INDICES]
     for detector in detectors:
-        threading.Thread(target=_vision_loop, args=(detector, frames, stop_event), daemon=True).start()
+        threading.Thread(target=_vision_loop, args=(detector, frames, landmarks, stop_event), daemon=True).start()
 
     shown_windows: set = set()
+    front_idx, side_idx = CAMERA_INDICES[0], CAMERA_INDICES[1]
 
     while True:
-        for camera_index, frame in dict(frames).items():
+        current_frames = dict(frames)
+        current_landmarks = dict(landmarks)
+
+        pose_frame = PoseFrame(
+            front=current_landmarks.get(front_idx),
+            side=current_landmarks.get(side_idx),
+        )
+        feedback = exercise.analyze(pose_frame)
+        feedback_color = (0, 200, 0) if feedback.correct else (0, 0, 220)
+
+        for camera_index, frame in current_frames.items():
             win_name = f"Kamera {camera_index}"
-            cv2.imshow(win_name, frame)
+            display = frame.copy()
+
+            if camera_index == front_idx:
+                cv2.putText(display, feedback.message, (10, 40),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, feedback_color, 2)
+                cv2.putText(display, f"Powtorzenia: {exercise.reps}", (10, 75),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+
+            cv2.imshow(win_name, display)
             shown_windows.add(win_name)
 
         if cv2.waitKey(10) & 0xFF in (ord("q"), ord("Q")):
