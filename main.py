@@ -115,6 +115,7 @@ if __name__ == "__main__":
         on_settings=start_pose_detection,
         music_player=background,
         dialogues_player=dialogues,
+        db=database,
     ))
 
     database.close()
