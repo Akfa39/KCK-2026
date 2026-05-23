@@ -1,6 +1,6 @@
 import calendar as _cal
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from typing import Callable, Optional, Any
 import flet as ft
 
@@ -30,6 +30,7 @@ class AppActions:
     on_settings: Optional[Callable] = None
     music_player: Optional[Any] = None
     dialogues_player: Optional[Any] = None
+    db: Optional[Any] = None
 
 
 # Placeholder
@@ -76,10 +77,22 @@ _MONTH_NAMES = [
 _DAY_NAMES = ["Pon", "Wt", "Śr", "Cz", "Pt", "Sob", "Ndz"]
 
 
-def page_calendar():
+def page_calendar(db=None):
     today = date.today()
     cur_year = [today.year]
     cur_month = [today.month]
+
+    workout_dates: set[date] = set()
+    if db is not None:
+        try:
+            for r in db.workouts.get_calendar(1):
+                if r.get("started_at"):
+                    workout_dates.add(datetime.fromisoformat(r["started_at"]).date())
+        except Exception:
+            pass
+
+    def count_for_month(year, month):
+        return sum(1 for d in workout_dates if d.year == year and d.month == month)
 
     def build_grid(year, month):
         weeks = _cal.monthcalendar(year, month)
@@ -108,31 +121,55 @@ def page_calendar():
             cells = []
             for col_idx, day in enumerate(week):
                 if day == 0:
-                    cells.append(ft.Container(expand=True, height=44))
+                    cells.append(ft.Container(expand=True, height=58))
                     continue
                 is_today = (day == today.day and month == today.month and year == today.year)
                 is_weekend = col_idx >= 5
+                is_workout = date(year, month, day) in workout_dates
 
                 if is_today:
                     bg, txt_color, weight = C_ACCENT, C_BG, ft.FontWeight.W_700
+                    dot_color = C_BG if is_workout else None
                 elif is_weekend:
                     bg, txt_color, weight = C_CARD, "#8AAB2A", ft.FontWeight.W_400
+                    dot_color = C_ACCENT if is_workout else None
                 else:
                     bg, txt_color, weight = C_CARD, C_TEXT, ft.FontWeight.W_400
+                    dot_color = C_ACCENT if is_workout else None
+
+                day_text = ft.Text(
+                    str(day),
+                    color=txt_color,
+                    size=15,
+                    weight=weight,
+                    text_align=ft.TextAlign.CENTER,
+                )
+
+                if dot_color:
+                    cell_content = ft.Column(
+                        controls=[
+                            day_text,
+                            ft.Container(
+                                width=7,
+                                height=7,
+                                bgcolor=dot_color,
+                                border_radius=4,
+                            ),
+                        ],
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        spacing=4,
+                    )
+                else:
+                    cell_content = day_text
 
                 cells.append(
                     ft.Container(
-                        content=ft.Text(
-                            str(day),
-                            color=txt_color,
-                            size=14,
-                            weight=weight,
-                            text_align=ft.TextAlign.CENTER,
-                        ),
+                        content=cell_content,
                         expand=True,
-                        height=44,
+                        height=58,
                         bgcolor=bg,
-                        border_radius=8,
+                        border_radius=10,
                         alignment=ft.Alignment(0, 0),
                         border=ft.border.all(1, C_BORDER) if not is_today else None,
                     )
@@ -148,12 +185,20 @@ def page_calendar():
         weight=ft.FontWeight.W_700,
     )
     grid_container = ft.Container(content=build_grid(cur_year[0], cur_month[0]))
+    count_label = ft.Text(
+        str(count_for_month(cur_year[0], cur_month[0])),
+        color=C_TEXT,
+        size=28,
+        weight=ft.FontWeight.W_700,
+    )
 
     def refresh(y, m):
         month_label.value = f"{_MONTH_NAMES[m]} {y}"
         grid_container.content = build_grid(y, m)
+        count_label.value = str(count_for_month(y, m))
         month_label.update()
         grid_container.update()
+        count_label.update()
 
     def go_prev(e):
         m, y = cur_month[0] - 1, cur_year[0]
@@ -194,7 +239,7 @@ def page_calendar():
                 ft.Divider(color=C_BORDER, height=20),
                 ft.Text("Liczba treningów", color=C_MUTED, size=11),
                 ft.Container(height=4),
-                ft.Text("0", color=C_TEXT, size=28, weight=ft.FontWeight.W_700),
+                count_label,
             ],
             spacing=0,
         ),
@@ -372,7 +417,7 @@ def main(page: ft.Page, actions: AppActions):
     pages = [
         page_home,
         page_trainings,
-        page_calendar,
+        lambda: page_calendar(actions.db),
         lambda: _page_settings(
             actions.music_player, music_vol,
             actions.dialogues_player, dialogues_vol,
