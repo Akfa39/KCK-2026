@@ -38,6 +38,7 @@ class DumbbellLegCurl(Exercise):
     description = ("Leżąc twarzą w dół na ławce, hantel trzymany stopami — "
                    "zginanie nóg w kolanach. Ćwiczenie tylnej części uda.")
     muscle_group = "Tylna część uda"
+    video_file = "dumbbell_leg_curl.mp4"
 
     def _initial_state(self) -> LegCurlState:
         return LegCurlState.DOWN
@@ -81,7 +82,7 @@ class DumbbellLegCurl(Exercise):
             self._last_angle = angle
             return Feedback(
                 message="Zwolnij — wykonuj ruch powoli i kontrolowanie.",
-                audio_file="too_fast.mp3",
+                audio_file="slow_down.mp3",
                 correct=False,
                 rep_counted=False,
             )
@@ -91,7 +92,7 @@ class DumbbellLegCurl(Exercise):
             self.state = LegCurlState.UP
             return Feedback(
                 message="Dobry zakres ruchu — wracaj kontrolowanie.",
-                audio_file="good_up.mp3",
+                audio_file="good_range_of_motion.mp3",
                 correct=True,
                 rep_counted=False,
             )

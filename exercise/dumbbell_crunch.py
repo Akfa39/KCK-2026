@@ -42,6 +42,7 @@ class DumbbellWeightedCrunch(Exercise):
     description = ("Leżąc na plecach z hantlem przy klatce, „zwijanie\" tułowia — "
                    "unoszenie łopatek od podłogi. Ćwiczenie mięśni brzucha.")
     muscle_group = "Brzuch"
+    video_file = "dumbbell_crunch.mp4"
 
     def _initial_state(self) -> CrunchState:
         return CrunchState.DOWN
@@ -109,7 +110,7 @@ class DumbbellWeightedCrunch(Exercise):
             self._last_angle = torso_angle
             return Feedback(
                 message="Wykonuj ruch kontrolowanie — bez rozpędu.",
-                audio_file="too_fast.mp3",
+                audio_file="no_momentum.mp3",
                 correct=False,
                 rep_counted=False,
             )
@@ -129,7 +130,7 @@ class DumbbellWeightedCrunch(Exercise):
             self.state = CrunchState.UP
             return Feedback(
                 message="Dobra robota — łopatki uniesione!",
-                audio_file="good_up.mp3",
+                audio_file="good_shoulder_blades_up.mp3",
                 correct=True,
                 rep_counted=False,
             )

@@ -45,6 +45,7 @@ class DumbbellFrenchPress(Exercise):
     description = ("Leżąc na ławce, opuszczanie hantli za głowę przez zginanie łokci — "
                    "ćwiczenie tricepsa. Łokcie blisko głowy, ramiona lekko odchylone od pionu.")
     muscle_group = "Triceps"
+    video_file = "dumbbell_french_press.mp4"
 
     def _initial_state(self) -> FrenchPressState:
         return FrenchPressState.UP
@@ -107,7 +108,7 @@ class DumbbellFrenchPress(Exercise):
             self._last_angle = angle
             return Feedback(
                 message="Zwolnij — wykonuj ruch w pełni kontrolowany.",
-                audio_file="too_fast.mp3",
+                audio_file="slow_down_controlled.mp3",
                 correct=False,
                 rep_counted=False,
             )
@@ -125,7 +126,7 @@ class DumbbellFrenchPress(Exercise):
             self.state = FrenchPressState.DOWN
             return Feedback(
                 message="Dobrze — hantle przy uszach, wracaj kontrolowanie.",
-                audio_file="good_down.mp3",
+                audio_file="good_dumbbells_at_ears.mp3",
                 correct=True,
                 rep_counted=False,
             )

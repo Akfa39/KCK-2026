@@ -28,6 +28,7 @@ class DumbbellWoodchop(Exercise):
     description = ("W półklęku z hantlem, obrót tułowia prowadzący hantel diagonalnie "
                    "od biodra do przeciwnego ramienia — ćwiczenie mięśni tułowia.")
     muscle_group = "Mięśnie tułowia"
+    video_file = "dumbbell_woodchop.mp4"
 
     def _initial_state(self) -> WoodchopState:
         return WoodchopState.DOWN
@@ -64,7 +65,7 @@ class DumbbellWoodchop(Exercise):
             if hip_rotation > self.HIP_ROTATION_RATIO:
                 return Feedback(
                     message="Biodra nie rotują — ruch pochodzi z tułowia, nie z bioder.",
-                    audio_file="hip_rotation.mp3",
+                    audio_file="hip_rotation_from_torso.mp3",
                     correct=False,
                     rep_counted=False,
                 )
@@ -75,7 +76,7 @@ class DumbbellWoodchop(Exercise):
             self._last_wrist_mid_y = wrist_mid_y
             return Feedback(
                 message="Zwolnij — wykonuj ruch kontrolowanie, utrzymując napięcie tułowia.",
-                audio_file="too_fast.mp3",
+                audio_file="slow_down_core_tension.mp3",
                 correct=False,
                 rep_counted=False,
             )
@@ -87,7 +88,7 @@ class DumbbellWoodchop(Exercise):
             self.state = WoodchopState.UP
             return Feedback(
                 message="Dobra rotacja — hantel przy ramieniu, wracaj kontrolowanie.",
-                audio_file="good_up.mp3",
+                audio_file="good_rotation.mp3",
                 correct=True,
                 rep_counted=False,
             )

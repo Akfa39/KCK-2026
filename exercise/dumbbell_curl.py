@@ -36,6 +36,7 @@ class DumbbellCurl(Exercise):
     name = "Dumbbell Curl"
     description = "Uginanie przedramienia z hantlem — ćwiczenie bicepsa."
     muscle_group = "Biceps"
+    video_file = "dumbbell_curl.mp4"
 
     def _initial_state(self) -> CurlState:
         return CurlState.DOWN
@@ -90,7 +91,7 @@ class DumbbellCurl(Exercise):
             self.state = CurlState.UP
             return Feedback(
                 message="Dobra robota — pełne uniesienie!",
-                audio_file="good_up.mp3",
+                audio_file="good_full_lift.mp3",
                 correct=True,
                 rep_counted=False,
             )

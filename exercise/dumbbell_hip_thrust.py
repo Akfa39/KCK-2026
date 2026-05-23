@@ -38,6 +38,7 @@ class DumbbellHipThrust(Exercise):
     description = ("Oparcie górnej części pleców o ławkę, hantel na biodrach, "
                    "wypychanie bioder w górę — ćwiczenie pośladków.")
     muscle_group = "Pośladki"
+    video_file = "dumbbell_hip_thrust.mp4"
 
     def _initial_state(self) -> HipThrustState:
         return HipThrustState.DOWN
@@ -86,7 +87,7 @@ class DumbbellHipThrust(Exercise):
             self.state = HipThrustState.UP
             return Feedback(
                 message="Świetnie — biodra w górze, ściśnij pośladki!",
-                audio_file="good_up.mp3",
+                audio_file="good_hips_squeezed.mp3",
                 correct=True,
                 rep_counted=False,
             )

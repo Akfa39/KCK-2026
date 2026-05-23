@@ -39,6 +39,7 @@ class DumbbellOverheadTricepExtension(Exercise):
     description = ("Siedząc na ławce, trzymanie hantla oburącz nad głową "
                    "i opuszczanie go za głowę — ćwiczenie tricepsa.")
     muscle_group = "Triceps"
+    video_file = "dumbbell_overhead_tricep_extension.mp4"
 
     def _initial_state(self) -> OverheadTricepState:
         return OverheadTricepState.UP
@@ -101,7 +102,7 @@ class DumbbellOverheadTricepExtension(Exercise):
             self._last_angle = angle
             return Feedback(
                 message="Zwolnij — wykonuj ruch w pełni kontrolowany.",
-                audio_file="too_fast.mp3",
+                audio_file="slow_down_controlled.mp3",
                 correct=False,
                 rep_counted=False,
             )
@@ -111,7 +112,7 @@ class DumbbellOverheadTricepExtension(Exercise):
             self.state = OverheadTricepState.DOWN
             return Feedback(
                 message="Dobrze — hantel za głową, wracaj kontrolowanie.",
-                audio_file="good_down.mp3",
+                audio_file="good_dumbbell_behind_head.mp3",
                 correct=True,
                 rep_counted=False,
             )

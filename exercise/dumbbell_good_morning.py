@@ -46,6 +46,7 @@ class DumbbellGoodMorning(Exercise):
     description = ("Stojąc z hantlem przy klatce, skłon w przód z wypchaniem bioder do tyłu — "
                    "ćwiczenie tylnej taśmy mięśniowej. Kręgosłup neutralny przez cały ruch.")
     muscle_group = "Tylna taśma"
+    video_file = "dumbbell_good_morning.mp4"
 
     def _initial_state(self) -> GoodMorningState:
         return GoodMorningState.STANDING
@@ -85,7 +86,7 @@ class DumbbellGoodMorning(Exercise):
             self._last_trunk_angle = trunk_angle
             return Feedback(
                 message="Wykonuj ruch kontrolowanie — nie opadaj zbyt gwałtownie.",
-                audio_file="too_fast.mp3",
+                audio_file="slow_down_dont_drop.mp3",
                 correct=False,
                 rep_counted=False,
             )

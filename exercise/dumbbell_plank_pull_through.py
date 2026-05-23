@@ -36,6 +36,7 @@ class DumbbellPlankPullThrough(Exercise):
     description = ("W pozycji wysokiej deski, przeciąganie hantla pod ciałem "
                    "z jednej strony na drugą — ćwiczenie antyrotacyjne mięśni tułowia.")
     muscle_group = "Mięśnie tułowia (antyrotacja)"
+    video_file = "dumbbell_plank_pull_through.mp4"
 
     def _initial_state(self) -> PlankPullThroughState:
         return PlankPullThroughState.NEUTRAL
@@ -95,7 +96,7 @@ class DumbbellPlankPullThrough(Exercise):
             if rotation > self.HIP_ROTATION_RATIO:
                 return Feedback(
                     message="Biodra kwadratowo do maty — nie rotuj bioder podczas przeciągania.",
-                    audio_file="hip_rotation.mp3",
+                    audio_file="no_hip_rotation_plank.mp3",
                     correct=False,
                     rep_counted=False,
                 )

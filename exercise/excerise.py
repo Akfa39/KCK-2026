@@ -19,6 +19,7 @@ class Exercise(ABC):
     name: ClassVar[str]
     description: ClassVar[str]
     muscle_group: ClassVar[str]
+    video_file: ClassVar[str]
 
     def __init__(self):
         self.reps = 0

@@ -1,0 +1,35 @@
+Nie wykryto sylwetki. | no_pose.mp3
+Dolne plecy odrywają się od podłoża — przyciśnij je do podłogi. | back_lifted.mp3
+Nie naciągaj karku — broda lekko przyciągnięta, głowa razem z tułowiem. | neck_strain.mp3
+Trzymaj hantel blisko klatki piersiowej. | dumbbell_far.mp3
+Wykonuj ruch kontrolowanie — bez rozpędu. | no_momentum.mp3
+Nie unoś tułowia tak wysoko — wystarczy oderwać łopatki od podłogi. | crunch_too_high.mp3
+Dobra robota — łopatki uniesione! | good_shoulder_blades_up.mp3
+Powtórzenie {self.reps} zaliczone! | rep_counted.mp3
+Trzymaj łokieć przy tułowiu — nie wysuwaj go do przodu. | elbow_drift.mp3
+Nie bujaj tułowiem — utrzymaj stabilną postawę. | body_swing.mp3
+Dobra robota — pełne uniesienie! | good_full_lift.mp3
+Wyprostuj ramię do końca przed następnym uniesieniem. | extend_arm.mp3
+Trzymaj łokcie blisko głowy — nie rozchylaj ich na boki. | elbow_flare.mp3
+Odchyl ramiona lekko do tyłu — nie trzymaj ich pionowo. | arms_vertical.mp3
+Zwolnij — wykonuj ruch w pełni kontrolowany. | slow_down_controlled.mp3
+Nie blokuj łokci na górze — utrzymuj napięcie na tricepsie. | elbow_lockout.mp3
+Dobrze — hantle przy uszach, wracaj kontrolowanie. | good_dumbbells_at_ears.mp3
+Pchaj biodra do tyłu zamiast zginać kolana — to nie jest przysiad. | squat_pattern.mp3
+Wykonuj ruch kontrolowanie — nie opadaj zbyt gwałtownie. | slow_down_dont_drop.mp3
+Dobry skłon — utrzymaj neutralny kręgosłup, wracaj powoli. | good_hinge.mp3
+Nie wyginaj dolnych pleców — zatrzymaj ruch gdy ciało tworzy prostą linię. | lordosis.mp3
+Ustaw stopy tak, by kolana były pod kątem ~90° w górnej pozycji. | foot_position.mp3
+Świetnie — biodra w górze, ściśnij pośladki! | good_hips_squeezed.mp3
+Biodra odrywają się od ławki — dociśnij je i napnij brzuch. | hip_lift.mp3
+Zwolnij — wykonuj ruch powoli i kontrolowanie. | slow_down.mp3
+Dobry zakres ruchu — wracaj kontrolowanie. | good_range_of_motion.mp3
+Wyprostuj nogi do końca przed kolejnym uginaniem. | extend_legs.mp3
+Ustabilizuj tułów — barki nie powinny się ruszać podczas ćwiczenia. | torso_movement.mp3
+Dobrze — hantel za głową, wracaj kontrolowanie. | good_dumbbell_behind_head.mp3
+Nie unoś bioder — utrzymaj prostą linię deski. | hips_up.mp3
+Biodra opadają — napnij brzuch i utrzymaj prostą linię. | hips_down.mp3
+Biodra kwadratowo do maty — nie rotuj bioder podczas przeciągania. | no_hip_rotation_plank.mp3
+Biodra nie rotują — ruch pochodzi z tułowia, nie z bioder. | hip_rotation_from_torso.mp3
+Zwolnij — wykonuj ruch kontrolowanie, utrzymując napięcie tułowia. | slow_down_core_tension.mp3
+Dobra rotacja — hantel przy ramieniu, wracaj kontrolowanie. | good_rotation.mp3
