@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, ClassVar, Optional
 
 @dataclass
 class PoseFrame:
@@ -16,24 +16,13 @@ class Feedback:
     rep_counted: bool
 
 class Exercise(ABC):
+    name: ClassVar[str]
+    description: ClassVar[str]
+    muscle_group: ClassVar[str]
+
     def __init__(self):
         self.reps = 0
         self.state: Enum = self._initial_state()
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def description(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def muscle_group(self) -> str:
-        pass
 
     @abstractmethod
     def _initial_state(self) -> Enum:

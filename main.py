@@ -4,8 +4,28 @@ import cv2
 from audio.speech_recognizer import SpeechRecognizer
 from audio.player import AudioPlayer
 from cv.pose_detector import PoseDetector
+from exercise.dumbbell_crunch import DumbbellWeightedCrunch
 from exercise.dumbbell_curl import DumbbellCurl
-from exercise.excerise import PoseFrame
+from exercise.dumbbell_french_press import DumbbellFrenchPress
+from exercise.dumbbell_good_morning import DumbbellGoodMorning
+from exercise.dumbbell_hip_thrust import DumbbellHipThrust
+from exercise.dumbbell_leg_curl import DumbbellLegCurl
+from exercise.dumbbell_overhead_tricep_extension import DumbbellOverheadTricepExtension
+from exercise.dumbbell_plank_pull_through import DumbbellPlankPullThrough
+from exercise.dumbbell_woodchop import DumbbellWoodchop
+from exercise.excerise import Exercise, PoseFrame
+
+ALL_EXERCISES: list[type[Exercise]] = [
+    DumbbellCurl,
+    DumbbellFrenchPress,
+    DumbbellOverheadTricepExtension,
+    DumbbellHipThrust,
+    DumbbellGoodMorning,
+    DumbbellLegCurl,
+    DumbbellWeightedCrunch,
+    DumbbellWoodchop,
+    DumbbellPlankPullThrough,
+]
 from ui.app import run as run_ui, AppActions
 from database.connector import DatabaseConnector
 
@@ -44,7 +64,7 @@ def _pose_session():
     landmarks: dict = {}
     stop_event = threading.Event()
 
-    exercise = DumbbellCurl()
+    exercise = ALL_EXERCISES[5]()
 
     detectors = [PoseDetector(i) for i in CAMERA_INDICES]
     for detector in detectors:
@@ -65,7 +85,7 @@ def _pose_session():
         feedback_color = (0, 200, 0) if feedback.correct else (0, 0, 220)
 
         for camera_index, frame in current_frames.items():
-            win_name = f"Kamera {camera_index}"
+            win_name = "Przednia" if camera_index == front_idx else "Boczna"
             display = frame.copy()
 
             if camera_index == front_idx:
