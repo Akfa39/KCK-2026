@@ -65,7 +65,7 @@ def _pose_session():
     landmarks: dict = {}
     stop_event = threading.Event()
 
-    exercise = DumbbellCurl()
+    exercise = ALL_EXERCISES[5]()
 
     detectors = [PoseDetector(i) for i in CAMERA_INDICES]
     for detector in detectors:
@@ -86,7 +86,7 @@ def _pose_session():
         feedback_color = (0, 200, 0) if feedback.correct else (0, 0, 220)
 
         for camera_index, frame in current_frames.items():
-            win_name = f"Kamera {camera_index}"
+            win_name = "Przednia" if camera_index == front_idx else "Boczna"
             display = frame.copy()
 
             if camera_index == front_idx:
