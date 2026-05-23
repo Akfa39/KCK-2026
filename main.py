@@ -4,8 +4,28 @@ import cv2
 from audio.speech_recognizer import SpeechRecognizer
 from audio.player import AudioPlayer
 from cv.pose_detector import PoseDetector
+from exercise.dumbbell_crunch import DumbbellWeightedCrunch
 from exercise.dumbbell_curl import DumbbellCurl
-from exercise.excerise import PoseFrame
+from exercise.dumbbell_french_press import DumbbellFrenchPress
+from exercise.dumbbell_good_morning import DumbbellGoodMorning
+from exercise.dumbbell_hip_thrust import DumbbellHipThrust
+from exercise.dumbbell_leg_curl import DumbbellLegCurl
+from exercise.dumbbell_overhead_tricep_extension import DumbbellOverheadTricepExtension
+from exercise.dumbbell_plank_pull_through import DumbbellPlankPullThrough
+from exercise.dumbbell_woodchop import DumbbellWoodchop
+from exercise.excerise import Exercise, PoseFrame
+
+ALL_EXERCISES: list[type[Exercise]] = [
+    DumbbellCurl,
+    DumbbellFrenchPress,
+    DumbbellOverheadTricepExtension,
+    DumbbellHipThrust,
+    DumbbellGoodMorning,
+    DumbbellLegCurl,
+    DumbbellWeightedCrunch,
+    DumbbellWoodchop,
+    DumbbellPlankPullThrough,
+]
 from ui.app import run as run_ui, AppActions
 from database.connector import DatabaseConnector
 
