@@ -32,18 +32,10 @@ class DumbbellPlankPullThrough(Exercise):
         super().__init__()
         self._hip_width_baseline: Optional[float] = None
 
-    @property
-    def name(self) -> str:
-        return "Deska z przeciąganiem hantla"
-
-    @property
-    def description(self) -> str:
-        return ("W pozycji wysokiej deski, przeciąganie hantla pod ciałem "
-                "z jednej strony na drugą — ćwiczenie antyrotacyjne mięśni tułowia.")
-
-    @property
-    def muscle_group(self) -> str:
-        return "Mięśnie tułowia (antyrotacja)"
+    name = "Deska z przeciąganiem hantla"
+    description = ("W pozycji wysokiej deski, przeciąganie hantla pod ciałem "
+                   "z jednej strony na drugą — ćwiczenie antyrotacyjne mięśni tułowia.")
+    muscle_group = "Mięśnie tułowia (antyrotacja)"
 
     def _initial_state(self) -> PlankPullThroughState:
         return PlankPullThroughState.NEUTRAL

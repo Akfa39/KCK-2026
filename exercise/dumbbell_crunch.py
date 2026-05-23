@@ -38,18 +38,10 @@ class DumbbellWeightedCrunch(Exercise):
         self._hip_y_baseline: Optional[float] = None
         self._neck_angle_baseline: Optional[float] = None
 
-    @property
-    def name(self) -> str:
-        return "Brzuszek z hantlem"
-
-    @property
-    def description(self) -> str:
-        return ("Leżąc na plecach z hantlem przy klatce, „zwijanie\" tułowia — "
-                "unoszenie łopatek od podłogi. Ćwiczenie mięśni brzucha.")
-
-    @property
-    def muscle_group(self) -> str:
-        return "Brzuch"
+    name = "Brzuszek z hantlem"
+    description = ("Leżąc na plecach z hantlem przy klatce, „zwijanie\" tułowia — "
+                   "unoszenie łopatek od podłogi. Ćwiczenie mięśni brzucha.")
+    muscle_group = "Brzuch"
 
     def _initial_state(self) -> CrunchState:
         return CrunchState.DOWN

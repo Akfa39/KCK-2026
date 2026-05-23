@@ -35,18 +35,10 @@ class DumbbellOverheadTricepExtension(Exercise):
         self._last_angle: Optional[float] = None
         self._shoulder_y_baseline: Optional[float] = None
 
-    @property
-    def name(self) -> str:
-        return "Siedzące prostowanie tricepsa hantlem zza głowy"
-
-    @property
-    def description(self) -> str:
-        return ("Siedząc na ławce, trzymanie hantla oburącz nad głową "
-                "i opuszczanie go za głowę — ćwiczenie tricepsa.")
-
-    @property
-    def muscle_group(self) -> str:
-        return "Triceps"
+    name = "Siedzące prostowanie tricepsa hantlem zza głowy"
+    description = ("Siedząc na ławce, trzymanie hantla oburącz nad głową "
+                   "i opuszczanie go za głowę — ćwiczenie tricepsa.")
+    muscle_group = "Triceps"
 
     def _initial_state(self) -> OverheadTricepState:
         return OverheadTricepState.UP

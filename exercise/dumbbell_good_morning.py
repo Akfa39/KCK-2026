@@ -42,18 +42,10 @@ class DumbbellGoodMorning(Exercise):
         super().__init__()
         self._last_trunk_angle: Optional[float] = None
 
-    @property
-    def name(self) -> str:
-        return "Dzień dobry z hantlem w uchwycie goblet"
-
-    @property
-    def description(self) -> str:
-        return ("Stojąc z hantlem przy klatce, skłon w przód z wypchaniem bioder do tyłu — "
-                "ćwiczenie tylnej taśmy mięśniowej. Kręgosłup neutralny przez cały ruch.")
-
-    @property
-    def muscle_group(self) -> str:
-        return "Tylna taśma"
+    name = "Dzień dobry z hantlem w uchwycie goblet"
+    description = ("Stojąc z hantlem przy klatce, skłon w przód z wypchaniem bioder do tyłu — "
+                   "ćwiczenie tylnej taśmy mięśniowej. Kręgosłup neutralny przez cały ruch.")
+    muscle_group = "Tylna taśma"
 
     def _initial_state(self) -> GoodMorningState:
         return GoodMorningState.STANDING

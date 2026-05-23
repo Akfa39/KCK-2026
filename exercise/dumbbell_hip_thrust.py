@@ -34,18 +34,10 @@ class DumbbellHipThrust(Exercise):
         super().__init__()
         self._top_reached: bool = False
 
-    @property
-    def name(self) -> str:
-        return "Unoszenie bioder z hantlem"
-
-    @property
-    def description(self) -> str:
-        return ("Oparcie górnej części pleców o ławkę, hantel na biodrach, "
-                "wypychanie bioder w górę — ćwiczenie pośladków.")
-
-    @property
-    def muscle_group(self) -> str:
-        return "Pośladki"
+    name = "Unoszenie bioder z hantlem"
+    description = ("Oparcie górnej części pleców o ławkę, hantel na biodrach, "
+                   "wypychanie bioder w górę — ćwiczenie pośladków.")
+    muscle_group = "Pośladki"
 
     def _initial_state(self) -> HipThrustState:
         return HipThrustState.DOWN

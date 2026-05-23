@@ -34,18 +34,10 @@ class DumbbellLegCurl(Exercise):
         self._hip_y_baseline: Optional[float] = None
         self._last_angle: Optional[float] = None
 
-    @property
-    def name(self) -> str:
-        return "Uginanie nóg z hantlem"
-
-    @property
-    def description(self) -> str:
-        return ("Leżąc twarzą w dół na ławce, hantel trzymany stopami — "
-                "zginanie nóg w kolanach. Ćwiczenie tylnej części uda.")
-
-    @property
-    def muscle_group(self) -> str:
-        return "Tylna część uda"
+    name = "Uginanie nóg z hantlem"
+    description = ("Leżąc twarzą w dół na ławce, hantel trzymany stopami — "
+                   "zginanie nóg w kolanach. Ćwiczenie tylnej części uda.")
+    muscle_group = "Tylna część uda"
 
     def _initial_state(self) -> LegCurlState:
         return LegCurlState.DOWN

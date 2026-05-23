@@ -33,17 +33,9 @@ class DumbbellCurl(Exercise):
         super().__init__()
         self._torso_x_baseline: Optional[float] = None
 
-    @property
-    def name(self) -> str:
-        return "Dumbbell Curl"
-
-    @property
-    def description(self) -> str:
-        return "Uginanie przedramienia z hantlem — ćwiczenie bicepsa."
-
-    @property
-    def muscle_group(self) -> str:
-        return "Biceps"
+    name = "Dumbbell Curl"
+    description = "Uginanie przedramienia z hantlem — ćwiczenie bicepsa."
+    muscle_group = "Biceps"
 
     def _initial_state(self) -> CurlState:
         return CurlState.DOWN

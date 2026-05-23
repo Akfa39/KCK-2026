@@ -41,18 +41,10 @@ class DumbbellFrenchPress(Exercise):
         super().__init__()
         self._last_angle: Optional[float] = None
 
-    @property
-    def name(self) -> str:
-        return "Francuskie wyciskanie hantlami"
-
-    @property
-    def description(self) -> str:
-        return ("Leżąc na ławce, opuszczanie hantli za głowę przez zginanie łokci — "
-                "ćwiczenie tricepsa. Łokcie blisko głowy, ramiona lekko odchylone od pionu.")
-
-    @property
-    def muscle_group(self) -> str:
-        return "Triceps"
+    name = "Francuskie wyciskanie hantlami"
+    description = ("Leżąc na ławce, opuszczanie hantli za głowę przez zginanie łokci — "
+                   "ćwiczenie tricepsa. Łokcie blisko głowy, ramiona lekko odchylone od pionu.")
+    muscle_group = "Triceps"
 
     def _initial_state(self) -> FrenchPressState:
         return FrenchPressState.UP

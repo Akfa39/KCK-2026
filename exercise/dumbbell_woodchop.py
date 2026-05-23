@@ -24,18 +24,10 @@ class DumbbellWoodchop(Exercise):
         self._hip_width_baseline: Optional[float] = None
         self._last_wrist_mid_y: Optional[float] = None
 
-    @property
-    def name(self) -> str:
-        return "Skręt tułowia w półklęku z hantlem"
-
-    @property
-    def description(self) -> str:
-        return ("W półklęku z hantlem, obrót tułowia prowadzący hantel diagonalnie "
-                "od biodra do przeciwnego ramienia — ćwiczenie mięśni tułowia.")
-
-    @property
-    def muscle_group(self) -> str:
-        return "Mięśnie tułowia"
+    name = "Skręt tułowia w półklęku z hantlem"
+    description = ("W półklęku z hantlem, obrót tułowia prowadzący hantel diagonalnie "
+                   "od biodra do przeciwnego ramienia — ćwiczenie mięśni tułowia.")
+    muscle_group = "Mięśnie tułowia"
 
     def _initial_state(self) -> WoodchopState:
         return WoodchopState.DOWN
