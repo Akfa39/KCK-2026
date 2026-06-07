@@ -4,3 +4,4 @@ pygame
 opencv-python
 mediapipe==0.10.14
 flet==0.84.0
+flet-video==0.84.0
