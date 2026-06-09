@@ -2,13 +2,17 @@ from typing import Optional
 
 import flet as ft
 
+from exercise.session import ExerciseSession
 from ui.actions import AppActions  # re-exported for backwards compatibility
 from ui.constants import C_BG, C_SURFACE, C_ACCENT, C_MUTED, C_BORDER, NAV_ITEMS
-from ui.page_home import page_home
-from ui.page_trainings import page_trainings
-from ui.page_calendar import page_calendar
-from ui.page_settings import page_settings
 from ui.page_exercise_detail import page_exercise_detail
+from ui.page_exercise_session import page_exercise_session
+from ui.page_home import page_home
+from ui.page_calendar import page_calendar
+from ui.page_rep_picker import page_rep_picker
+from ui.page_settings import page_settings
+from ui.page_summary import page_summary
+from ui.page_trainings import page_trainings
 
 
 def main(page: ft.Page, actions: AppActions):
@@ -37,20 +41,61 @@ def main(page: ft.Page, actions: AppActions):
 
     content_area = ft.Container(expand=True, bgcolor=C_BG)
 
-    def open_exercise(exercise_class):
-        def go_back():
-            content_area.content = page_trainings(open_exercise)
-            page.update()
+    # ── navigation helpers ──────────────────────────────────────────────────
 
-        content_area.content = page_exercise_detail(
-            exercise_class,
-            on_back=go_back,
-            on_start=actions.on_exercise_select,
-        )
+    def show_trainings():
+        content_area.content = page_trainings(open_exercise)
         page.update()
 
     def go_to_training():
         switch_tab(1)
+
+    # ── exercise flow ───────────────────────────────────────────────────────
+
+    def open_exercise(exercise_class):
+        def go_back_to_list():
+            show_trainings()
+
+        content_area.content = page_exercise_detail(
+            exercise_class,
+            on_back=go_back_to_list,
+            on_start=lambda ec: open_rep_picker(ec),
+        )
+        page.update()
+
+    def open_rep_picker(exercise_class):
+        def go_back_to_detail():
+            open_exercise(exercise_class)
+
+        def start_session(reps: int):
+            session = ExerciseSession(
+                exercise_class,
+                target_reps=reps,
+                dialogues_player=actions.dialogues_player,
+            )
+
+            def on_complete(result):
+                async def _show_summary():
+                    content_area.content = page_summary(result, on_back=show_trainings)
+                    page.update()
+                page.run_task(_show_summary)
+
+            content_area.content = page_exercise_session(
+                exercise_class,
+                session=session,
+                on_complete=on_complete,
+                page=page,
+            )
+            page.update()
+
+        content_area.content = page_rep_picker(
+            exercise_class,
+            on_start=start_session,
+            on_back=go_back_to_detail,
+        )
+        page.update()
+
+    # ── page list ───────────────────────────────────────────────────────────
 
     pages = [
         lambda: page_home(actions.db, go_to_training),
@@ -61,6 +106,8 @@ def main(page: ft.Page, actions: AppActions):
             actions.dialogues_player, dialogues_vol,
         ),
     ]
+
+    # ── nav bar ─────────────────────────────────────────────────────────────
 
     nav_row = ft.Row(spacing=0)
 
@@ -74,18 +121,13 @@ def main(page: ft.Page, actions: AppActions):
     def build_tab(index):
         label = NAV_ITEMS[index][0]
         emoji = NAV_ITEMS[index][1]
-
-        if index == active_index:
-            label_color = C_ACCENT
-            label_weight = ft.FontWeight.W_600
-        else:
-            label_color = C_MUTED
-            label_weight = ft.FontWeight.W_400
+        label_color = C_ACCENT if index == active_index else C_MUTED
+        label_weight = ft.FontWeight.W_600 if index == active_index else ft.FontWeight.W_400
 
         def on_click(event):
             switch_tab(index)
 
-        tab = ft.Container(
+        return ft.Container(
             content=ft.Column(
                 controls=[
                     ft.Text(emoji, size=24),
@@ -99,8 +141,6 @@ def main(page: ft.Page, actions: AppActions):
             padding=ft.padding.symmetric(vertical=10),
             on_click=on_click,
         )
-
-        return tab
 
     def rebuild_nav():
         nav_row.controls.clear()
@@ -116,9 +156,7 @@ def main(page: ft.Page, actions: AppActions):
             action()
 
         content_area.content = pages[index]()
-
         rebuild_nav()
-
         page.update()
 
     page.add(
