@@ -1,6 +1,4 @@
-import math
 from enum import Enum, auto
-from typing import Any, Optional
 
 import mediapipe as mp
 
@@ -14,39 +12,19 @@ class LegCurlState(Enum):
     UP = auto()
 
 
-def _angle(a: Any, b: Any, c: Any) -> float:
-    ax, ay = a.x - b.x, a.y - b.y
-    cx, cy = c.x - b.x, c.y - b.y
-    dot = ax * cx + ay * cy
-    cross = ax * cy - ay * cx
-    return abs(math.degrees(math.atan2(abs(cross), dot)))
-
-
 class DumbbellLegCurl(Exercise):
 
     ANGLE_DOWN = 160
     ANGLE_UP = 90
-    HIP_LIFT_THRESHOLD = 0.05
-    FAST_MOVEMENT_DELTA = 35
-
-    def __init__(self):
-        super().__init__()
-        self._hip_y_baseline: Optional[float] = None
-        self._last_angle: Optional[float] = None
 
     name = "Uginanie nóg z hantlem"
-    description = ("Leżąc twarzą w dół na ławce, hantel trzymany stopami — "
+    description = ("Leżąc twarzą w dół na ławce, hantel trzymany stopami - "
                    "zginanie nóg w kolanach. Ćwiczenie tylnej części uda.")
-    muscle_group = "Tylna część uda"
+    muscle_group = "Nogi"
     video_file = "dumbbell_leg_curl.mp4"
 
     def _initial_state(self) -> LegCurlState:
         return LegCurlState.DOWN
-
-    def reset(self):
-        super().reset()
-        self._hip_y_baseline = None
-        self._last_angle = None
 
     def analyze(self, frame: PoseFrame) -> Feedback:
         source = frame.side if frame.side is not None else frame.front
@@ -63,35 +41,12 @@ class DumbbellLegCurl(Exercise):
         knee = lm[mp_pose.PoseLandmark.RIGHT_KNEE]
         ankle = lm[mp_pose.PoseLandmark.RIGHT_ANKLE]
 
-        angle = _angle(hip, knee, ankle)
+        angle = self.angle(hip, knee, ankle)
 
-        if self.state == LegCurlState.DOWN and angle >= self.ANGLE_DOWN:
-            self._hip_y_baseline = hip.y
-
-        if self._hip_y_baseline is not None:
-            hip_lift = abs(hip.y - self._hip_y_baseline)
-            if hip_lift > self.HIP_LIFT_THRESHOLD:
-                return Feedback(
-                    message="Biodra odrywają się od ławki — dociśnij je i napnij brzuch.",
-                    audio_file="hip_lift.mp3",
-                    correct=False,
-                    rep_counted=False,
-                )
-
-        if self._last_angle is not None and abs(angle - self._last_angle) > self.FAST_MOVEMENT_DELTA:
-            self._last_angle = angle
-            return Feedback(
-                message="Zwolnij — wykonuj ruch powoli i kontrolowanie.",
-                audio_file="slow_down.mp3",
-                correct=False,
-                rep_counted=False,
-            )
-        self._last_angle = angle
-
-        if self.state == LegCurlState.DOWN and angle < self.ANGLE_UP:
+        if self.state == LegCurlState.DOWN and self._hold(angle < self.ANGLE_UP):
             self.state = LegCurlState.UP
             return Feedback(
-                message="Dobry zakres ruchu — wracaj kontrolowanie.",
+                message="Dobry zakres ruchu - wracaj kontrolowanie.",
                 audio_file="good_range_of_motion.mp3",
                 correct=True,
                 rep_counted=False,

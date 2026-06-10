@@ -12,6 +12,7 @@ class PoseDetector:
 
     def start(self):
         self._cap = cv2.VideoCapture(self.camera_index)
+        self._cap.set(cv2.CAP_PROP_FPS, 60)
         self._pose = mp_pose.Pose()
 
     def stop(self):

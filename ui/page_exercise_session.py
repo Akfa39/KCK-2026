@@ -1,7 +1,8 @@
 import base64
 import threading
 import time
-from typing import Callable, Type
+from pathlib import Path
+from typing import Any, Callable, Optional, Type
 
 import cv2
 import flet as ft
@@ -10,12 +11,13 @@ from cv.pose_detector import PoseDetector
 from exercise.excerise import Exercise, PoseFrame
 from ui.constants import C_BG, C_SURFACE, C_ACCENT, C_TEXT, C_MUTED, C_BORDER
 
-CAMERA_INDICES = [0, 1]
+CAMERA_INDICES = [0, 2]
+ASSETS_DIR = Path(__file__).parent.parent / "assets"
 
 
 def _encode_frame(frame) -> str:
     _, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
-    return base64.b64encode(buf).decode()
+    return "data:image/jpeg;base64," + base64.b64encode(buf).decode()
 
 
 def _camera_placeholder(label: str) -> ft.Container:
@@ -42,6 +44,7 @@ def page_exercise_session(
     reps: int,
     page: ft.Page,
     on_back: Callable,
+    dialogues_player: Optional[Any] = None,
 ) -> ft.Stack:
     stop_event = threading.Event()
     exercise_instance = exercise_class()
@@ -53,6 +56,25 @@ def page_exercise_session(
 
     front_idx = CAMERA_INDICES[0]
     side_idx = CAMERA_INDICES[1]
+
+    last_audio_file = [None]
+
+    def _play_feedback_audio(audio_file: str):
+        if not audio_file or not dialogues_player:
+            return
+        if audio_file == last_audio_file[0]:
+            return
+        last_audio_file[0] = audio_file
+        try:
+            dialogues_player.play(str(ASSETS_DIR / audio_file))
+        except Exception:
+            pass
+
+    def _update():
+        try:
+            page.session.connection.loop.call_soon_threadsafe(page.update)
+        except Exception:
+            pass
 
     # --- camera UI ---
     cam_images = [
@@ -88,6 +110,19 @@ def page_exercise_session(
         size=13,
     )
 
+    hold_label = ft.Text(
+        "Przytrzymaj pozycję",
+        color=C_MUTED,
+        size=12,
+    )
+    hold_progress_bar = ft.ProgressBar(
+        value=0,
+        color=C_ACCENT,
+        bgcolor=C_BORDER,
+        border_radius=8,
+        height=8,
+    )
+
     # --- vision threads (mirror of _pose_session vision_loop) ---
     def _vision_loop(detector: PoseDetector):
         detector.start()
@@ -114,20 +149,15 @@ def page_exercise_session(
             )
 
             feedback = exercise_instance.analyze(pose_frame)
-            fb_color = (0, 200, 0) if feedback.correct else (0, 0, 220)
+            _play_feedback_audio(feedback.audio_file)
 
             updated = False
             for i, cam_idx in enumerate([front_idx, side_idx]):
                 if cam_idx not in cur_frames:
                     continue
                 display = cur_frames[cam_idx].copy()
-                if cam_idx == front_idx:
-                    cv2.putText(display, feedback.message, (10, 40),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.8, fb_color, 2)
-                    cv2.putText(display, f"Powt: {exercise_instance.reps}/{reps}",
-                                (10, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
 
-                cam_images[i].src_base64 = _encode_frame(display)
+                cam_images[i].src = _encode_frame(display)
                 if cam_containers[i].content is not cam_images[i]:
                     cam_containers[i].content = cam_images[i]
                 updated = True
@@ -135,20 +165,15 @@ def page_exercise_session(
             if updated:
                 reps_label.value = f"{exercise_instance.reps} / {reps}"
                 feedback_label.value = feedback.message
-                try:
-                    page.update()
-                except Exception:
-                    break
+                hold_progress_bar.value = exercise_instance.hold_progress
+                _update()
 
             if exercise_instance.reps >= reps:
                 reps_label.value = f"{reps} / {reps} — Gotowe!"
-                try:
-                    page.update()
-                except Exception:
-                    pass
+                _update()
                 break
 
-            time.sleep(0.033)
+            time.sleep(0.0167)
 
     # --- countdown overlay ---
     countdown_text = ft.Text(
@@ -190,10 +215,7 @@ def page_exercise_session(
             if stop_event.is_set():
                 return
             countdown_text.value = str(n)
-            try:
-                page.update()
-            except Exception:
-                return
+            _update()
             time.sleep(1)
 
         if stop_event.is_set():
@@ -201,19 +223,13 @@ def page_exercise_session(
         countdown_label_ctrl.value = ""
         countdown_text.value = "START!"
         countdown_text.size = 110
-        try:
-            page.update()
-        except Exception:
-            return
+        _update()
         time.sleep(0.8)
 
         if stop_event.is_set():
             return
         countdown_overlay.visible = False
-        try:
-            page.update()
-        except Exception:
-            return
+        _update()
 
         threading.Thread(target=_display_loop, daemon=True).start()
 
@@ -257,6 +273,17 @@ def page_exercise_session(
         border=ft.border.all(1, C_BORDER),
     )
 
+    hold_progress_container = ft.Container(
+        content=ft.Column(
+            controls=[hold_label, hold_progress_bar],
+            spacing=4,
+        ),
+        bgcolor=C_SURFACE,
+        border_radius=12,
+        padding=ft.padding.symmetric(horizontal=24, vertical=10),
+        border=ft.border.all(1, C_BORDER),
+    )
+
     cameras_row = ft.Row(
         controls=cam_containers,
         spacing=16,
@@ -269,7 +296,7 @@ def page_exercise_session(
     )
 
     body = ft.Column(
-        controls=[header, cameras_stack],
+        controls=[header, hold_progress_container, cameras_stack],
         spacing=16,
         expand=True,
     )

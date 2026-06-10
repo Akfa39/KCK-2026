@@ -66,6 +66,7 @@ def main(page: ft.Page, actions: AppActions):
                 reps=reps,
                 page=page,
                 on_back=go_to_reps,
+                dialogues_player=actions.dialogues_player,
             )
             page.update()
 

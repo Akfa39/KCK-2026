@@ -28,14 +28,9 @@ _ALL_EXERCISES: list[Type[Exercise]] = [
 ]
 
 _GROUP_ORDER = [
-    "Biceps",
-    "Triceps",
-    "Brzuch",
-    "Pośladki",
-    "Tylna część uda",
-    "Tylna taśma",
-    "Mięśnie tułowia",
-    "Mięśnie tułowia (antyrotacja)",
+    "Biceps/Triceps",
+    "Nogi",
+    "Klatka piersiowa",
 ]
 
 
