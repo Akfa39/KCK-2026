@@ -9,6 +9,8 @@ from ui.page_trainings import page_trainings
 from ui.page_calendar import page_calendar
 from ui.page_settings import page_settings
 from ui.page_exercise_detail import page_exercise_detail
+from ui.page_exercise_reps import page_exercise_reps
+from ui.page_exercise_session import page_exercise_session
 
 
 def main(page: ft.Page, actions: AppActions):
@@ -38,16 +40,36 @@ def main(page: ft.Page, actions: AppActions):
     content_area = ft.Container(expand=True, bgcolor=C_BG)
 
     def open_exercise(exercise_class):
-        def go_back():
+        def go_to_trainings():
             content_area.content = page_trainings(open_exercise)
             page.update()
 
-        content_area.content = page_exercise_detail(
-            exercise_class,
-            on_back=go_back,
-            on_start=actions.on_exercise_select,
-        )
-        page.update()
+        def go_to_detail():
+            content_area.content = page_exercise_detail(
+                exercise_class,
+                on_back=go_to_trainings,
+                on_start=lambda _ec: go_to_reps(),
+            )
+            page.update()
+
+        def go_to_reps():
+            content_area.content = page_exercise_reps(
+                exercise_class,
+                on_back=go_to_detail,
+                on_confirm=go_to_session,
+            )
+            page.update()
+
+        def go_to_session(reps: int):
+            content_area.content = page_exercise_session(
+                exercise_class,
+                reps=reps,
+                page=page,
+                on_back=go_to_reps,
+            )
+            page.update()
+
+        go_to_detail()
 
     def go_to_training():
         switch_tab(1)

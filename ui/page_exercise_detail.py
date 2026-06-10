@@ -5,9 +5,7 @@ import flet as ft
 from flet_video import Video, VideoMedia, PlaylistMode, VideoConfiguration
 
 from exercise.excerise import Exercise
-from ui.constants import (
-    C_BG, C_SURFACE, C_ACCENT, C_TEXT, C_MUTED, C_BORDER,
-)
+from ui.constants import C_BG, C_SURFACE, C_ACCENT, C_TEXT, C_MUTED, C_BORDER
 
 _ASSETS_DIR = Path(__file__).parent.parent / "assets"
 
@@ -43,63 +41,73 @@ def page_exercise_detail(
         bgcolor=C_SURFACE,
     )
 
+    description_scroll = ft.Column(
+        controls=[
+            ft.Text(
+                exercise_class.name,
+                color=C_TEXT,
+                size=24,
+                weight=ft.FontWeight.W_700,
+            ),
+            ft.Container(height=10),
+            ft.Container(
+                content=ft.Text(
+                    exercise_class.muscle_group,
+                    color=C_BG,
+                    size=12,
+                    weight=ft.FontWeight.W_700,
+                ),
+                bgcolor=C_ACCENT,
+                border_radius=20,
+                padding=ft.padding.symmetric(horizontal=14, vertical=5),
+            ),
+            ft.Container(height=24),
+            ft.Text(
+                "Opis ćwiczenia",
+                color=C_MUTED,
+                size=12,
+                weight=ft.FontWeight.W_600,
+            ),
+            ft.Container(height=6),
+            ft.Text(
+                exercise_class.description,
+                color=C_TEXT,
+                size=15,
+            ),
+        ],
+        spacing=0,
+        scroll=ft.ScrollMode.AUTO,
+        expand=True,
+    )
+
+    start_button = ft.Container(
+        content=ft.Text(
+            "Rozpocznij",
+            color=C_BG,
+            size=16,
+            weight=ft.FontWeight.W_700,
+            text_align=ft.TextAlign.CENTER,
+        ),
+        bgcolor=C_ACCENT,
+        border_radius=14,
+        padding=ft.padding.symmetric(horizontal=40, vertical=16),
+        on_click=start_clicked,
+        ink=True,
+    )
+
     info = ft.Container(
         content=ft.Column(
             controls=[
-                ft.Text(
-                    exercise_class.name,
-                    color=C_TEXT,
-                    size=24,
-                    weight=ft.FontWeight.W_700,
-                ),
-                ft.Container(height=10),
-                ft.Container(
-                    content=ft.Text(
-                        exercise_class.muscle_group,
-                        color=C_BG,
-                        size=12,
-                        weight=ft.FontWeight.W_700,
-                    ),
-                    bgcolor=C_ACCENT,
-                    border_radius=20,
-                    padding=ft.padding.symmetric(horizontal=14, vertical=5),
-                ),
-                ft.Container(height=24),
-                ft.Text(
-                    "Opis ćwiczenia",
-                    color=C_MUTED,
-                    size=12,
-                    weight=ft.FontWeight.W_600,
-                ),
-                ft.Container(height=6),
-                ft.Text(
-                    exercise_class.description,
-                    color=C_TEXT,
-                    size=15,
-                ),
-                ft.Container(height=36),
-                ft.Container(
-                    content=ft.Text(
-                        "Rozpocznij",
-                        color=C_BG,
-                        size=16,
-                        weight=ft.FontWeight.W_700,
-                        text_align=ft.TextAlign.CENTER,
-                    ),
-                    bgcolor=C_ACCENT,
-                    border_radius=14,
-                    padding=ft.padding.symmetric(horizontal=40, vertical=16),
-                    on_click=start_clicked,
-                    ink=True,
-                ),
-                ft.Container(height=80),
+                description_scroll,
+                ft.Container(height=20),
+                start_button,
+                ft.Container(height=16),
             ],
             spacing=0,
-            scroll=ft.ScrollMode.AUTO,
+            expand=True,
         ),
         expand=True,
         padding=ft.padding.symmetric(horizontal=48, vertical=28),
-        alignment=ft.Alignment(-1, -1),
     )
 
     main = ft.Column(
@@ -108,31 +116,29 @@ def page_exercise_detail(
         expand=True,
     )
 
-    back_button = ft.Container(
-        content=ft.Container(
-            content=ft.Row(
-                controls=[
-                    ft.Icon(ft.Icons.ARROW_BACK_IOS_NEW_ROUNDED, color=C_BG, size=18),
-                    ft.Text("Wróć", color=C_BG, size=14, weight=ft.FontWeight.W_600),
-                ],
-                spacing=6,
-                tight=True,
-            ),
-            bgcolor=C_ACCENT,
-            border_radius=30,
-            padding=ft.padding.symmetric(horizontal=20, vertical=12),
-            on_click=lambda e: on_back(),
-            ink=True,
-            shadow=ft.BoxShadow(
-                spread_radius=0,
-                blur_radius=16,
-                color="#66000000",
-                offset=ft.Offset(0, 4),
-            ),
+    # back button positioned directly in Stack — NO expand=True wrapper that blocks clicks
+    back_btn = ft.Container(
+        content=ft.Row(
+            controls=[
+                ft.Icon(ft.Icons.ARROW_BACK_IOS_NEW_ROUNDED, color=C_BG, size=18),
+                ft.Text("Wróć", color=C_BG, size=14, weight=ft.FontWeight.W_600),
+            ],
+            spacing=6,
+            tight=True,
         ),
-        alignment=ft.Alignment(1, 1),
-        padding=ft.padding.only(right=32, bottom=24),
-        expand=True,
+        bgcolor=C_ACCENT,
+        border_radius=30,
+        padding=ft.padding.symmetric(horizontal=20, vertical=12),
+        on_click=lambda e: on_back(),
+        ink=True,
+        shadow=ft.BoxShadow(
+            spread_radius=0,
+            blur_radius=16,
+            color="#66000000",
+            offset=ft.Offset(0, 4),
+        ),
+        right=32,
+        bottom=24,
     )
 
-    return ft.Stack(controls=[main, back_button], expand=True)
+    return ft.Stack(controls=[main, back_btn], expand=True)
