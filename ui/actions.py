@@ -11,4 +11,5 @@ class AppActions:
     on_exercise_select: Optional[Callable] = None
     music_player: Optional[Any] = None
     dialogues_player: Optional[Any] = None
+    voice_commands: Optional[Any] = None
     db: Optional[Any] = None

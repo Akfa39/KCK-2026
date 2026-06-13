@@ -46,6 +46,7 @@ def page_exercise_session(
     on_back: Callable,
     on_finish: Optional[Callable[[int], None]] = None,
     dialogues_player: Optional[Any] = None,
+    voice_commands: Optional[Any] = None,
 ) -> ft.Stack:
     stop_event = threading.Event()
     exercise_instance = exercise_class()
@@ -175,6 +176,8 @@ def page_exercise_session(
                 time.sleep(1.5)
                 if not stop_event.is_set():
                     stop_event.set()
+                    if voice_commands:
+                        voice_commands.clear_stop_callback()
                     if on_finish:
                         page.session.connection.loop.call_soon_threadsafe(
                             lambda: on_finish(reps)
@@ -309,16 +312,31 @@ def page_exercise_session(
         expand=True,
     )
 
+    def _clear_voice_stop():
+        if voice_commands:
+            voice_commands.clear_stop_callback()
+
     def go_back(e=None):
+        _clear_voice_stop()
         stop_event.set()
         on_back()
 
     def end_training(e=None):
+        _clear_voice_stop()
         stop_event.set()
         if on_finish:
             on_finish(exercise_instance.reps)
         else:
             on_back()
+
+    if voice_commands:
+        def _voice_stop():
+            try:
+                page.session.connection.loop.call_soon_threadsafe(end_training)
+            except Exception:
+                pass
+
+        voice_commands.set_stop_callback(_voice_stop)
 
     back_btn = ft.Container(
         content=ft.Row(

@@ -13,6 +13,12 @@ class WorkoutRepository(BaseRepository):
         self._conn.commit()
         return cursor.lastrowid
 
+    def delete(self, workout_id: int) -> bool:
+        self._execute("DELETE FROM TBL_Workout_Exercises WHERE workout_id = ?", (workout_id,))
+        cursor = self._execute("DELETE FROM TBL_Workouts WHERE id = ?", (workout_id,))
+        self._conn.commit()
+        return cursor.rowcount > 0
+
     def finish(self, workout_id: int, calories_burned: int = None) -> bool:
         cursor = self._execute(
             """UPDATE TBL_Workouts

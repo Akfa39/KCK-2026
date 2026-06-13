@@ -2,6 +2,7 @@ import threading
 
 from audio.player import AudioPlayer
 from audio.speech_recognizer import SpeechRecognizer
+from audio.voice_commands import VoiceCommandDispatcher
 from database.connector import DatabaseConnector
 from exercise.dumbbell_crunch import DumbbellWeightedCrunch
 from exercise.dumbbell_curl import DumbbellCurl
@@ -29,11 +30,12 @@ _EXERCISE_CLASSES = [
     DumbbellPlankPullThrough,
 ]
 
-def _speech_loop(recognizer: SpeechRecognizer):
+def _speech_loop(recognizer: SpeechRecognizer, voice_commands: VoiceCommandDispatcher):
     while True:
         text = recognizer.listen()
         if text:
             print(f"Rozpoznano: {text}")
+            voice_commands.handle_text(text)
 
 if __name__ == "__main__":
     database = DatabaseConnector("app.db")
@@ -45,11 +47,13 @@ if __name__ == "__main__":
     dialogues = AudioPlayer(1)
 
     recognizer = SpeechRecognizer(MODEL_PATH)
-    threading.Thread(target=_speech_loop, args=(recognizer,), daemon=True).start()
+    voice_commands = VoiceCommandDispatcher()
+    threading.Thread(target=_speech_loop, args=(recognizer, voice_commands), daemon=True).start()
 
     run_ui(AppActions(
         music_player=background,
         dialogues_player=dialogues,
+        voice_commands=voice_commands,
         db=database,
     ))
 

@@ -69,27 +69,39 @@ def main(page: ft.Page, actions: AppActions):
                 except Exception:
                     pass
 
+            def on_session_back():
+                if actions.db and workout_id is not None:
+                    try:
+                        actions.db.workouts.delete(workout_id)
+                    except Exception:
+                        pass
+                go_to_reps()
+
             content_area.content = page_exercise_session(
                 exercise_class,
                 reps=reps,
                 page=page,
-                on_back=go_to_reps,
+                on_back=on_session_back,
                 on_finish=lambda completed: go_to_report(completed, reps, workout_id),
                 dialogues_player=actions.dialogues_player,
+                voice_commands=actions.voice_commands,
             )
             page.update()
 
         def go_to_report(completed_reps: int, target_reps: int, workout_id: int = None):
             if actions.db and workout_id is not None:
                 try:
-                    ex_row = actions.db.exercises.get_by_name(exercise_class.name)
-                    if ex_row:
-                        actions.db.workouts.log_exercise(
-                            workout_id,
-                            exercise_id=ex_row["id"],
-                            reps_completed=completed_reps,
-                        )
-                    actions.db.workouts.finish(workout_id)
+                    if completed_reps >= target_reps:
+                        ex_row = actions.db.exercises.get_by_name(exercise_class.name)
+                        if ex_row:
+                            actions.db.workouts.log_exercise(
+                                workout_id,
+                                exercise_id=ex_row["id"],
+                                reps_completed=completed_reps,
+                            )
+                        actions.db.workouts.finish(workout_id)
+                    else:
+                        actions.db.workouts.delete(workout_id)
                 except Exception:
                     pass
 
