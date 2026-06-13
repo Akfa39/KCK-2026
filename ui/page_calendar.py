@@ -20,16 +20,19 @@ def page_calendar(db=None):
     cur_month = [today.month]
 
     workout_dates: set[date] = set()
+    workout_counts: dict[date, int] = {}
     if db is not None:
         try:
             for r in db.workouts.get_calendar(1):
                 if r.get("started_at"):
-                    workout_dates.add(datetime.fromisoformat(r["started_at"]).date())
+                    d = datetime.fromisoformat(r["started_at"]).date()
+                    workout_dates.add(d)
+                    workout_counts[d] = workout_counts.get(d, 0) + 1
         except Exception:
             pass
 
     def count_for_month(year, month):
-        return sum(1 for d in workout_dates if d.year == year and d.month == month)
+        return sum(v for d, v in workout_counts.items() if d.year == year and d.month == month)
 
     def build_grid(year, month):
         weeks = _cal.monthcalendar(year, month)

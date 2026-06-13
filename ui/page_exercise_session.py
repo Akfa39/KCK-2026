@@ -44,6 +44,7 @@ def page_exercise_session(
     reps: int,
     page: ft.Page,
     on_back: Callable,
+    on_finish: Optional[Callable[[int], None]] = None,
     dialogues_player: Optional[Any] = None,
 ) -> ft.Stack:
     stop_event = threading.Event()
@@ -171,6 +172,13 @@ def page_exercise_session(
             if exercise_instance.reps >= reps:
                 reps_label.value = f"{reps} / {reps} — Gotowe!"
                 _update()
+                time.sleep(1.5)
+                if not stop_event.is_set():
+                    stop_event.set()
+                    if on_finish:
+                        page.session.connection.loop.call_soon_threadsafe(
+                            lambda: on_finish(reps)
+                        )
                 break
 
             time.sleep(0.0167)
@@ -305,6 +313,13 @@ def page_exercise_session(
         stop_event.set()
         on_back()
 
+    def end_training(e=None):
+        stop_event.set()
+        if on_finish:
+            on_finish(exercise_instance.reps)
+        else:
+            on_back()
+
     back_btn = ft.Container(
         content=ft.Row(
             controls=[
@@ -325,6 +340,30 @@ def page_exercise_session(
             color="#66000000",
             offset=ft.Offset(0, 4),
         ),
+        left=32,
+        bottom=24,
+    )
+
+    end_btn = ft.Container(
+        content=ft.Row(
+            controls=[
+                ft.Icon(ft.Icons.STOP_ROUNDED, color=C_BG, size=18),
+                ft.Text("Zakończ trening", color=C_BG, size=14, weight=ft.FontWeight.W_600),
+            ],
+            spacing=6,
+            tight=True,
+        ),
+        bgcolor="#E53935",
+        border_radius=30,
+        padding=ft.padding.symmetric(horizontal=20, vertical=12),
+        on_click=end_training,
+        ink=True,
+        shadow=ft.BoxShadow(
+            spread_radius=0,
+            blur_radius=16,
+            color="#66000000",
+            offset=ft.Offset(0, 4),
+        ),
         right=32,
         bottom=24,
     )
@@ -335,4 +374,4 @@ def page_exercise_session(
         padding=ft.padding.symmetric(horizontal=32, vertical=20),
     )
 
-    return ft.Stack(controls=[outer, back_btn], expand=True)
+    return ft.Stack(controls=[outer, back_btn, end_btn], expand=True)

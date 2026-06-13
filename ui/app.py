@@ -11,6 +11,7 @@ from ui.page_settings import page_settings
 from ui.page_exercise_detail import page_exercise_detail
 from ui.page_exercise_reps import page_exercise_reps
 from ui.page_exercise_session import page_exercise_session
+from ui.page_training_report import page_training_report
 
 
 def main(page: ft.Page, actions: AppActions):
@@ -61,12 +62,42 @@ def main(page: ft.Page, actions: AppActions):
             page.update()
 
         def go_to_session(reps: int):
+            workout_id = None
+            if actions.db:
+                try:
+                    workout_id = actions.db.workouts.start(user_id=1)
+                except Exception:
+                    pass
+
             content_area.content = page_exercise_session(
                 exercise_class,
                 reps=reps,
                 page=page,
                 on_back=go_to_reps,
+                on_finish=lambda completed: go_to_report(completed, reps, workout_id),
                 dialogues_player=actions.dialogues_player,
+            )
+            page.update()
+
+        def go_to_report(completed_reps: int, target_reps: int, workout_id: int = None):
+            if actions.db and workout_id is not None:
+                try:
+                    ex_row = actions.db.exercises.get_by_name(exercise_class.name)
+                    if ex_row:
+                        actions.db.workouts.log_exercise(
+                            workout_id,
+                            exercise_id=ex_row["id"],
+                            reps_completed=completed_reps,
+                        )
+                    actions.db.workouts.finish(workout_id)
+                except Exception:
+                    pass
+
+            content_area.content = page_training_report(
+                exercise_class,
+                completed_reps=completed_reps,
+                target_reps=target_reps,
+                on_back=lambda: switch_tab(1),
             )
             page.update()
 

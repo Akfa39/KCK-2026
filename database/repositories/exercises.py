@@ -18,6 +18,12 @@ class ExerciseRepository(BaseRepository):
         ).fetchone()
         return self._row_to_dict(row)
 
+    def get_by_name(self, name: str) -> dict | None:
+        row = self._execute(
+            "SELECT * FROM TBL_Exercises WHERE name = ?", (name,)
+        ).fetchone()
+        return self._row_to_dict(row)
+
     def add(self, name: str, description: str = None, muscle_group: str = None,
             equipment: str = None, difficulty: int = None, user_id: int = None,
             image_url: str = None, video_url: str = None) -> int:

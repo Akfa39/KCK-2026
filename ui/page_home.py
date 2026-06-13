@@ -57,7 +57,6 @@ def _last_workout_card(last: Optional[dict]) -> ft.Container:
         else:
             ago = f"{days_ago} dni temu"
 
-        date_str = dt.strftime("%-d %B %Y") if hasattr(dt, "strftime") else str(dt.date())
         try:
             date_str = dt.strftime("%d %B %Y").lstrip("0")
         except Exception:
