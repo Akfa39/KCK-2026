@@ -12,6 +12,7 @@ from exercise.excerise import Exercise, PoseFrame
 from ui.constants import C_BG, C_SURFACE, C_ACCENT, C_TEXT, C_MUTED, C_BORDER
 
 CAMERA_INDICES = [0, 2]
+SWAP_CAMERAS = True
 ASSETS_DIR = Path(__file__).parent.parent / "assets"
 
 
@@ -56,8 +57,7 @@ def page_exercise_session(
     landmarks: dict = {}
     frames_lock = threading.Lock()
 
-    front_idx = CAMERA_INDICES[0]
-    side_idx = CAMERA_INDICES[1]
+    front_idx, side_idx = CAMERA_INDICES[::-1] if SWAP_CAMERAS else CAMERA_INDICES
 
     last_audio_file = [None]
 
