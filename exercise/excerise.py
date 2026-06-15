@@ -23,6 +23,7 @@ class Exercise(ABC):
     video_file: ClassVar[str]
 
     HOLD_FRAMES: ClassVar[int] = 60
+    DEBUG: ClassVar[bool] = True
 
     def __init__(self):
         self.reps = 0
@@ -55,6 +56,10 @@ class Exercise(ABC):
     @property
     def hold_progress(self) -> float:
         return min(self._hold_counter / self.HOLD_FRAMES, 1.0)
+
+    def _debug(self, *parts: str) -> None:
+        if self.DEBUG:
+            print(f"[{self.__class__.__name__}] state={self.state.name} | " + " | ".join(parts))
 
     @staticmethod
     def angle(a: Any, b: Any, c: Any) -> float:

@@ -58,6 +58,9 @@ class DumbbellWeightedCrunch(Exercise):
 
         if self._hip_y_baseline is not None:
             hip_shift = self._hip_y_baseline - hip.y
+            self._debug(
+                f"hip_shift={hip_shift:.3f} (limit={self.BACK_LIFT_THRESHOLD})",
+            )
             if hip_shift > self.BACK_LIFT_THRESHOLD:
                 return Feedback(
                     message="Dolne plecy odrywają się od podłoża - przyciśnij je do podłogi.",
@@ -65,6 +68,10 @@ class DumbbellWeightedCrunch(Exercise):
                     correct=False,
                     rep_counted=False,
                 )
+
+        self._debug(
+            f"torso_angle={torso_angle:.1f} (UP<{self.ANGLE_UP}, DOWN>{self.ANGLE_DOWN})",
+        )
 
         if self.state == CrunchState.DOWN and self._hold(torso_angle < self.ANGLE_UP):
             self.state = CrunchState.UP

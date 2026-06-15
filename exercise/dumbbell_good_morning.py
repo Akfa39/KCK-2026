@@ -26,7 +26,7 @@ class DumbbellGoodMorning(Exercise):
 
     TRUNK_STANDING = 25
     TRUNK_HINGED = 40
-    KNEE_ANGLE_MIN = 130
+    KNEE_ANGLE_MIN = 145
 
     name = "Dzień dobry z hantlem w uchwycie goblet"
     description = ("Stojąc z hantlem przy klatce, skłon w przód z wypchaniem bioder do tyłu - "
@@ -55,6 +55,11 @@ class DumbbellGoodMorning(Exercise):
 
         trunk_angle = _trunk_angle(shoulder, hip)
         knee_angle = self.angle(hip, knee, ankle)
+
+        self._debug(
+            f"knee_angle={knee_angle:.1f} (min={self.KNEE_ANGLE_MIN}) | "
+            f"trunk_angle={trunk_angle:.1f} (STANDING<{self.TRUNK_STANDING}, HINGED>{self.TRUNK_HINGED})",
+        )
 
         if knee_angle < self.KNEE_ANGLE_MIN:
             return Feedback(
