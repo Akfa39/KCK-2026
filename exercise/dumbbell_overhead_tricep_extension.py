@@ -46,6 +46,10 @@ class DumbbellOverheadTricepExtension(Exercise):
             shoulder_width = abs(l_shoulder_f.x - r_shoulder_f.x)
             elbow_width = abs(l_elbow_f.x - r_elbow_f.x)
 
+            flare_ratio = elbow_width / shoulder_width if shoulder_width > 0.02 else 0.0
+            self._debug(
+                f"elbow_flare_ratio={flare_ratio:.2f} (limit={self.ELBOW_FLARE_RATIO}, shoulder_width={shoulder_width:.3f})",
+            )
             if shoulder_width > 0.02 and elbow_width / shoulder_width > self.ELBOW_FLARE_RATIO:
                 return Feedback(
                     message="Trzymaj łokcie blisko głowy - nie rozchylaj ich na boki.",
@@ -62,6 +66,10 @@ class DumbbellOverheadTricepExtension(Exercise):
         wrist = lm[mp_pose.PoseLandmark.RIGHT_WRIST]
 
         angle = self.angle(shoulder, elbow, wrist)
+
+        self._debug(
+            f"angle={angle:.1f} (DOWN<{self.ANGLE_DOWN}, UP>{self.ANGLE_UP})",
+        )
 
         if self.state == OverheadTricepState.UP and self._hold(angle < self.ANGLE_DOWN):
             self.state = OverheadTricepState.DOWN

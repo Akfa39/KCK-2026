@@ -51,6 +51,11 @@ class DumbbellHipThrust(Exercise):
 
         hip_rel = hip.y - shoulder.y
 
+        self._debug(
+            f"hip_rel={hip_rel:.3f} (UP<{self.HIP_UP_THRESHOLD}, DOWN>{self.HIP_DOWN_THRESHOLD}) | "
+            f"hip.y={hip.y:.3f}, shoulder.y={shoulder.y:.3f} (lordosis if hip.y < {shoulder.y - self.LORDOSIS_Y_MARGIN:.3f})",
+        )
+
         if hip.y < shoulder.y - self.LORDOSIS_Y_MARGIN:
             return Feedback(
                 message="Nie wyginaj dolnych pleców - zatrzymaj ruch gdy ciało tworzy prostą linię.",

@@ -15,7 +15,7 @@ class CurlState(Enum):
 class DumbbellCurl(Exercise):
 
     ANGLE_DOWN = 160
-    ANGLE_UP = 50
+    ANGLE_UP = 10
     ELBOW_DRIFT_THRESHOLD = 0.07
 
     name = "Dumbbell Curl"
@@ -46,13 +46,21 @@ class DumbbellCurl(Exercise):
             shoulder_s = lm_side[mp_pose.PoseLandmark.RIGHT_SHOULDER]
             elbow_s = lm_side[mp_pose.PoseLandmark.RIGHT_ELBOW]
 
-            if shoulder_s.x - elbow_s.x > self.ELBOW_DRIFT_THRESHOLD:
+            elbow_drift = shoulder_s.x - elbow_s.x
+            self._debug(
+                f"elbow_drift={elbow_drift:.3f} (limit={self.ELBOW_DRIFT_THRESHOLD})",
+            )
+            if abs(elbow_drift) > self.ELBOW_DRIFT_THRESHOLD:
                 return Feedback(
                     message="Trzymaj łokieć przy tułowiu - nie wysuwaj go do przodu.",
                     audio_file="elbow_drift.mp3",
                     correct=False,
                     rep_counted=False,
                 )
+
+        self._debug(
+            f"angle={angle:.1f} (UP<{self.ANGLE_UP}, DOWN>{self.ANGLE_DOWN})",
+        )
 
         if self.state == CurlState.DOWN and self._hold(angle < self.ANGLE_UP):
             self.state = CurlState.UP

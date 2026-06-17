@@ -43,6 +43,10 @@ class DumbbellLegCurl(Exercise):
 
         angle = self.angle(hip, knee, ankle)
 
+        self._debug(
+            f"angle={angle:.1f} (UP<{self.ANGLE_UP}, DOWN>{self.ANGLE_DOWN}, extend<130)",
+        )
+
         if self.state == LegCurlState.DOWN and self._hold(angle < self.ANGLE_UP):
             self.state = LegCurlState.UP
             return Feedback(

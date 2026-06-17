@@ -15,7 +15,7 @@ class WoodchopState(Enum):
 
 class DumbbellWoodchop(Exercise):
 
-    FAST_WRIST_DELTA = 0.12
+    FAST_WRIST_DELTA = 0.06
 
     def __init__(self):
         super().__init__()
@@ -52,15 +52,24 @@ class DumbbellWoodchop(Exercise):
 
         wrist_mid_y = (l_wrist.y + r_wrist.y) / 2
 
-        if self._last_wrist_mid_y is not None and abs(wrist_mid_y - self._last_wrist_mid_y) > self.FAST_WRIST_DELTA:
-            self._last_wrist_mid_y = wrist_mid_y
-            return Feedback(
-                message="Zwolnij - wykonuj ruch kontrolowanie, utrzymując napięcie tułowia.",
-                audio_file="slow_down_core_tension.mp3",
-                correct=False,
-                rep_counted=False,
+        if self._last_wrist_mid_y is not None:
+            wrist_delta = abs(wrist_mid_y - self._last_wrist_mid_y)
+            self._debug(
+                f"wrist_delta={wrist_delta:.3f} (limit={self.FAST_WRIST_DELTA})",
             )
+            if wrist_delta > self.FAST_WRIST_DELTA:
+                self._last_wrist_mid_y = wrist_mid_y
+                return Feedback(
+                    message="Zwolnij - wykonuj ruch kontrolowanie, utrzymując napięcie tułowia.",
+                    audio_file="slow_down_core_tension.mp3",
+                    correct=False,
+                    rep_counted=False,
+                )
         self._last_wrist_mid_y = wrist_mid_y
+
+        self._debug(
+            f"wrist_mid_y={wrist_mid_y:.3f} (UP<{shoulder.y + 0.05:.3f}, DOWN>{hip.y - 0.05:.3f})",
+        )
 
         if self.state == WoodchopState.DOWN and self._hold(wrist_mid_y < shoulder.y + 0.05):
             self.state = WoodchopState.UP

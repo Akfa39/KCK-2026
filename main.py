@@ -42,6 +42,7 @@ if __name__ == "__main__":
     database.seed_exercises(_EXERCISE_CLASSES)
 
     background = AudioPlayer(0)
+    background.set_volume(0)
     background.play(MUSIC_FILE)
 
     dialogues = AudioPlayer(1)

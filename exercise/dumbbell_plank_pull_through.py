@@ -44,6 +44,10 @@ class DumbbellPlankPullThrough(Exercise):
             body_angle = self.angle(shoulder_s, hip_s, ankle_s)
             deviation = abs(body_angle - 180)
 
+            self._debug(
+                f"body_angle={body_angle:.1f}, deviation={deviation:.1f} (max={self.BODY_LINE_MAX_DEVIATION})",
+            )
+
             if deviation > self.BODY_LINE_MAX_DEVIATION:
                 if body_angle > 180:
                     return Feedback(
@@ -71,6 +75,11 @@ class DumbbellPlankPullThrough(Exercise):
         hip_center_x = (l_hip.x + r_hip.x) / 2
         left_crossed = l_wrist.x > hip_center_x + self.WRIST_CROSS_THRESHOLD
         right_crossed = r_wrist.x < hip_center_x - self.WRIST_CROSS_THRESHOLD
+
+        self._debug(
+            f"hip_center_x={hip_center_x:.3f}, l_wrist.x={l_wrist.x:.3f}, r_wrist.x={r_wrist.x:.3f} "
+            f"(threshold={self.WRIST_CROSS_THRESHOLD}) | left_crossed={left_crossed}, right_crossed={right_crossed}",
+        )
 
         if self.state == PlankPullThroughState.NEUTRAL and self._hold(left_crossed or right_crossed):
             self.state = PlankPullThroughState.PULLING
